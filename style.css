@@ -1,0 +1,59 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 24px;
+}
+
+#mainMenu {
+  margin-bottom: 24px;
+}
+
+#topicContent video {
+  display: block;
+  margin-top: 12px;
+}
+
+/* Hace que todo el contenido sea más responsivo en móviles */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Contenedores en columna para móviles */
+.bloque {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+}
+
+/* Imágenes y videos ocupan el 100% del ancho disponible */
+.bloque img,
+.bloque video,
+.bloque iframe {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+/* Asegura que el contenido de texto no quede pegado a los bordes */
+.bloque p,
+.bloque h2 {
+  width: 100%;
+  max-width: 800px;
+}
+
+/* En pantallas grandes, centra y limita el ancho */
+@media (min-width: 768px) {
+  .bloque {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+}
+

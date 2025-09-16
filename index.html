@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Curso de Matemáticas</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      margin: 0;
+      padding: 20px;
+      background: linear-gradient(#f7fbfb, #eef6f6);
+      color: #123;
+    }
+    
+    #mainMenu {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(10, 10, 10, 0.06);
+      display: none; /* Oculto hasta login */
+    }
+    
+    h2 { color: #2b7a78; margin-top: 0; }
+    select, button {
+      padding: 10px; margin: 10px 0;
+      border-radius: 6px; border: 1px solid #ddd;
+    }
+    button {
+      background: #2b7a78; color: white; border: none; cursor: pointer;
+    }
+    button:hover { background: #1f5f5d; }
+    
+    #topicContent { max-width: 1200px; margin: 24px auto; }
+    #authMessage { max-width: 600px; margin: 0 auto; text-align: center; color: #d9534f; }
+  </style>
+</head>
+<body>
+  <div style="text-align:center; margin-bottom: 16px;">
+    <button id="login-btn">Iniciar Sesión</button>
+    <button id="logout-btn" style="display:none;">Cerrar Sesión</button>
+  </div>
+
+  <div id="authMessage"></div>
+
+  <div id="mainMenu">
+    <h2>Seleccione un tema de matemáticas</h2>
+    <select id="topicSelect">
+      <option value="">--Elige un tema--</option>
+      <option value="conjuntos">Conjuntos</option>
+      <option value="desigualdades">Desigualdades</option>
+    </select>
+    <button id="loadTopic">Cargar Tema</button>
+  </div>
+
+  <div id="topicContent"></div>
+
+  <script src="auth.js"></script>
+  <script src="math.js"></script>
+</body>
+</html>
+

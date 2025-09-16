@@ -1,0 +1,773 @@
+<!-- =========================
+  SECCIÓN: Conjuntos, Axiomas y Ejercicios (Matemáticas)
+  Pega este bloque completo donde quieras en tu HTML
+========================= -->
+<div class="panel math-sets-section" style="margin-top:30px;">
+
+  <h2>Conjuntos Numéricos, Axiomas de ℝ y Ejercicios</h2>
+  <p class="small">Explora los conjuntos (ℕ, ℤ, ℚ, ℝ, ℂ), los axiomas fundamentales de los números reales (resumidos en 10 ítems), propiedades de orden y practica con ejercicios interactivos. Al final tienes un examen breve para evaluar lo aprendido.</p>
+
+  <!-- RUEDA INTERACTIVA (conjuntos) -->
+  <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
+    <div style="flex:0 0 520px;">
+      <canvas id="numberSetsWheelFull" width="520" height="520" style="display:block;margin:0 auto;border-radius:8px;background:#fff"></canvas>
+      <div id="numberSetInfoFull" style="margin-top:12px; font-weight:600; text-align:center;"></div>
+    </div>
+
+    <!-- DEFINICIONES Y EJEMPLOS -->
+    <div style="flex:1 1 420px;">
+      <div class="panel" style="padding:12px;">
+        <h3>Definiciones rápidas</h3>
+        <ul>
+          <li><strong>ℕ (Naturales):</strong> {1,2,3,...} (a veces incluyen 0 según convención). <em>Ejemplo:</em> 7 ∈ ℕ.</li>
+          <li><strong>ℤ (Enteros):</strong> {...,-2,-1,0,1,2,...}. <em>Ejemplo:</em> -3 ∈ ℤ.</li>
+          <li><strong>ℚ (Racionales):</strong> números expresables como p/q con p,q∈ℤ, q≠0 (fracciones). <em>Ejemplo:</em> 1/3, -7, 2.5 ∈ ℚ.</li>
+          <li><strong>ℝ (Reales):</strong> incluye racionales e irracionales (no expresables como fracción exacta). <em>Ejemplo:</em> √2, π ∈ ℝ.</li>
+          <li><strong>ℂ (Complejos):</strong> números de la forma a + bi, con i² = -1. <em>Ejemplo:</em> 3 + 4i ∈ ℂ.</li>
+        </ul>
+        <hr>
+        <h4>Axiomas (resumen en 10 puntos)</h4>
+	<ol>
+	  <li><strong>Cerradura:</strong> ℝ es cerrado bajo la suma y el producto: si a,b∈ℝ entonces a+b ∈ ℝ y a·b ∈ ℝ.</li>
+	  <li><strong>Conmutatividad:</strong> a+b = b+a y a·b = b·a para todos a,b ∈ ℝ.</li>
+	  <li><strong>Asociatividad:</strong> (a+b)+c = a+(b+c) y (a·b)·c = a·(b·c) para todos a,b,c ∈ ℝ.</li>
+	  <li><strong>Elementos neutros:</strong> existe 0 tal que a+0=a y existe 1 (≠0) tal que a·1=a.</li>
+	  <li><strong>Inversos:</strong> para cada a existe −a con a+(−a)=0; para cada a≠0 existe a⁻¹ con a·a⁻¹=1.</li>
+	  <li><strong>Distributividad:</strong> para todos a,b,c ∈ ℝ: a·(b+c)=a·b + a·c.</li>
+	  <li><strong>Tricotomía (propiedad de orden):</strong> para cualesquiera a,b ∈ ℝ exactamente una de las afirmaciones es verdadera: a < b, a=b o a>b.</li>
+	  <li><strong>Compatibilidad del orden con suma y producto:</strong>
+	    <ul>
+	      <li>(i) Aditiva: si a < b entonces a+c < b+c para todo c ∈ ℝ.</li>
+	      <li>(ii) Multiplicativa: si a < b y c > 0 entonces a·c < b·c. Si c<0 la desigualdad se invierte (a·c > b·c).</li>
+	    </ul>
+	  </li>
+	  <li><strong>Transitividad del orden:</strong> si a < b y b < c entonces a < c (para a,b,c ∈ ℝ).</li>
+	  <li><strong>Axioma de completitud:</strong> todo subconjunto no vacío de ℝ que está acotado superiormente tiene un supremo (mínima cota superior) en ℝ.</li>
+	</ol>
+      </div>
+
+      <!-- INTERACTIVO: Pertenencia -->
+      <div class="panel" style="margin-top:12px;padding:12px;">
+        <h3>Pregunta interactiva: ¿A qué conjuntos pertenece?</h3>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <input id="numCheckInput" type="text" placeholder="Ej: 3, -1/2, pi, sqrt(2), 2+3i" style="flex:1; padding:8px;">
+          <button class="btn" id="checkBelongBtn">Comprobar</button>
+        </div>
+        <div id="belongResult" style="margin-top:10px;font-weight:600"></div>
+        <div style="margin-top:8px;font-size:0.9rem;color:#444" class="small">Acepta notaciones: <code>p/q</code>, <code>sqrt(2)</code>, <code>pi</code>, <code>e</code>, y complejos como <code>a+bi</code>.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SECCIÓN: PROPIEDADES Y EJEMPLOS -->
+  <div class="panel" style="margin-top:18px;">
+    <h3>Propiedades de orden: Tricotomía y Transitividad</h3>
+    <p class="small">
+  La <strong>tricotomía</strong> dice que para dos reales a,b exactamente una de las relaciones a < b, a=b o a>b es verdadera.
+  La <strong>transitividad</strong> garantiza que si a<b y b<c entonces a<c.
+  La <strong>compatibilidad del orden</strong> incluye dos items importantes:
+  (i) la suma preserva desigualdades: si a < b entonces a+c < b+c para cualquier c∈ℝ; 
+  (ii) la multiplicación por un número positivo preserva el orden: si a < b y c > 0 entonces a·c < b·c (si c<0 la desigualdad se invierte: a·c > b·c).
+</p>
+
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:200px">
+        <label>Ejercicio: ordena estos números:</label>
+        <div style="margin-top:8px">
+          <button class="btn" id="shuffleOrderBtn">Nuevo conjunto</button>
+        </div>
+        <div id="orderList" style="margin-top:10px"></div>
+        <div style="margin-top:8px">
+          <button class="btn" id="checkOrderBtn">Comprobar orden</button>
+          <button class="btn mutebtn" id="resetOrderBtn">Reiniciar</button>
+        </div>
+        <div id="orderFeedback" style="margin-top:8px;font-weight:600;"></div>
+      </div>
+
+      <div style="flex:1;min-width:200px">
+        <label>Ejemplo (compatibilidad):</label>
+        <p class="small">Si 2<3 entonces 2+5 < 3+5. Compruébalo con tus valores.</p>
+        <div style="display:flex;gap:8px">
+          <input id="aVal" type="number" value="2" style="width:80px;padding:6px">
+          <input id="bVal" type="number" value="3" style="width:80px;padding:6px">
+          <button class="btn" id="checkCompatBtn">Probar</button>
+        </div>
+        <div id="compatResult" style="margin-top:8px;font-weight:600"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EJERCICIOS de axiomas (MCQ) -->
+  <div class="panel" style="margin-top:18px;">
+    <h3>Ejercicios rápidos: axiomas y conceptos</h3>
+    <div id="axiomExercises"></div>
+  </div>
+
+<!-- =========================
+  SECCIÓN: Intervalos en los Números Reales
+  Agregar antes del examen final
+========================= -->
+<div class="panel" style="margin-top:18px;">
+  <h3>Tipos de Intervalos en los Números Reales</h3>
+  <p class="small">
+    Los intervalos son subconjuntos de números reales comprendidos entre dos valores. 
+    Pueden ser acotados (con límites finitos) o no acotados (con extremos infinitos), 
+    y abiertos (no incluyen extremos) o cerrados (incluyen extremos).
+  </p>
+
+  <div style="display:flex; gap:20px; flex-wrap:wrap; margin-top:12px;">
+    <!-- INTERVALOS ACOTADOS -->
+    <div style="flex:1; min-width:300px;">
+      <h4>Intervalos Acotados</h4>
+      <table style="width:100%; border-collapse:collapse;">
+        <tr style="background:#f5f5f5">
+          <th style="padding:8px; text-align:left;">Tipo</th>
+          <th style="padding:8px; text-align:left;">Notación</th>
+          <th style="padding:8px; text-align:left;">Representación</th>
+        </tr>
+        <tr>
+          <td style="padding:8px; border-bottom:1px solid #eee;">Abierto</td>
+          <td style="padding:8px; border-bottom:1px solid #eee;">(a, b)</td>
+          <td style="padding:8px; border-bottom:1px solid #eee;">{x ∈ ℝ | a < x < b}</td>
+        </tr>
+        <tr>
+          <td style="padding:8px; border-bottom:1px solid #eee;">Cerrado</td>
+          <td style="padding:8px; border-bottom:1px solid #eee;">[a, b]</td>
+          <td style="padding:8px; border-bottom:1px solid #eee;">{x ∈ ℝ | a ≤ x ≤ b}</td>
+        </tr>
+        <tr>
+          <td style="padding:8px; border-bottom:1px solid #eee;">Semiabierto</td>
+          <td style="padding:8px; border-bottom:1px solid #eee;">[a, b) o (a, b]</td>
+          <td style="padding:8px; border-bottom:1px solid #eee;">{x ∈ ℝ | a ≤ x < b} o {x ∈ ℝ | a < x ≤ b}</td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- INTERVALOS NO ACOTADOS -->
+    <div style="flex:1; min-width:300px;">
+      <h4>Intervalos No Acotados</h4>
+      <table style="width:100%; border-collapse:collapse;">
+        <tr style="background:#f5f5f5">
+          <th style="padding:8px; text-align:left;">Tipo</th>
+          <th style="padding:8px; text-align:left;">Notación</th>
+          <th style="padding:8px; text-align:left;">Representación</th>
+        </tr>
+        <tr>
+          <td style="padding:8px; border-bottom:1px solid #eee;">Hacia +∞</td>
+          <td style="padding:8px; border-bottom:1px solid #eee;">(a, ∞) o [a, ∞)</td>
+          <td style="padding:8px; border-bottom:1px solid #eee;">{x ∈ ℝ | x > a} o {x ∈ ℝ | x ≥ a}</td>
+        </tr>
+        <tr>
+          <td style="padding:8px; border-bottom:1px solid #eee;">Hacia -∞</td>
+          <td style="padding:8px; border-bottom:1px solid #eee;">(-∞, b) o (-∞, b]</td>
+          <td style="padding:8px; border-bottom:1px solid #eee;">{x ∈ ℝ | x < b} o {x ∈ ℝ | x ≤ b}</td>
+        </tr>
+        <tr>
+          <td style="padding:8px; border-bottom:1px solid #eee;">Todos los reales</td>
+          <td style="padding:8px; border-bottom:1px solid #eee;">(-∞, ∞)</td>
+          <td style="padding:8px; border-bottom:1px solid #eee;">ℝ</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- VISUALIZACIÓN DE INTERVALOS -->
+  <div style="margin-top:20px;">
+    <h4>Visualización de Intervalos</h4>
+    <div style="display:flex; gap:15px; flex-wrap:wrap;">
+      <div style="flex:1; min-width:250px;">
+        <canvas id="intervalCanvas1" width="250" height="60" style="border:1px solid #eee; border-radius:4px; display:block;"></canvas>
+        <div style="text-align:center; margin-top:8px;">
+          <select id="intervalTypeSelector" style="padding:6px; border-radius:4px; border:1px solid #ddd;">
+            <option value="open">(a, b) - Abierto</option>
+            <option value="closed">[a, b] - Cerrado</option>
+            <option value="halfOpen1">[a, b) - Semiabierto</option>
+            <option value="halfOpen2">(a, b] - Semiabierto</option>
+            <option value="infinitePos">[a, ∞) - No acotado positivo</option>
+            <option value="infiniteNeg">(-∞, b] - No acotado negativo</option>
+          </select>
+        </div>
+      </div>
+      
+      <div style="flex:1; min-width:250px;">
+        <div class="panel" style="padding:12px;">
+          <strong>Práctica: ¿Qué intervalo es?</strong>
+          <p class="small" id="intervalQuestion">Selecciona el tipo de intervalo para {x | 2 ≤ x < 5}</p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+            <button class="interval-option-btn" data-answer="closed">[2, 5]</button>
+            <button class="interval-option-btn" data-answer="halfOpen1">[2, 5)</button>
+            <button class="interval-option-btn" data-answer="open">(2, 5)</button>
+            <button class="interval-option-btn" data-answer="other">Otro</button>
+          </div>
+          <div id="intervalFeedback" style="margin-top:8px; font-weight:600;"></div>
+          <button class="btn mutebtn" id="nextIntervalBtn" style="margin-top:8px;">Siguiente ejercicio</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Funcionalidad para la visualización de intervalos
+(function(){
+  const canvas = document.getElementById('intervalCanvas1');
+  const ctx = canvas.getContext('2d');
+  const selector = document.getElementById('intervalTypeSelector');
+  const intervalQuestions = [
+    {set: "{x | 2 ≤ x < 5}", answer: "halfOpen1", representation: "[2, 5)"},
+    {set: "{x | -1 < x ≤ 3}", answer: "halfOpen2", representation: "(-1, 3]"},
+    {set: "{x | x > 4}", answer: "infinitePos", representation: "(4, ∞)"},
+    {set: "{x | x ≤ 2}", answer: "infiniteNeg", representation: "(-∞, 2]"},
+    {set: "{x | 1 < x < 4}", answer: "open", representation: "(1, 4)"},
+    {set: "{x | -2 ≤ x ≤ 0}", answer: "closed", representation: "[-2, 0]"}
+  ];
+  let currentQuestion = 0;
+
+  function drawInterval(type) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const centerY = canvas.height / 2;
+    const margin = 20;
+    const length = canvas.width - 2 * margin;
+    
+    // Dibujar línea numérica
+    ctx.beginPath();
+    ctx.moveTo(margin, centerY);
+    ctx.lineTo(margin + length, centerY);
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    
+    // Dibujar marcas
+    for (let i = 0; i <= 10; i++) {
+      const x = margin + (i / 10) * length;
+      ctx.beginPath();
+      ctx.moveTo(x, centerY - 5);
+      ctx.lineTo(x, centerY + 5);
+      ctx.stroke();
+      
+      // Etiquetas
+      ctx.font = '10px Arial';
+      ctx.fillStyle = '#333';
+      ctx.textAlign = 'center';
+      ctx.fillText((i - 5).toString(), x, centerY + 18);
+    }
+    
+    // Dibujar intervalo según el tipo
+    ctx.strokeStyle = '#2b7a78';
+    ctx.lineWidth = 3;
+    
+    switch(type) {
+      case 'open':
+        // (a, b) - Círculos huecos en -2 y 2
+        drawHollowCircle(margin + (3/10) * length, centerY);
+        drawHollowCircle(margin + (7/10) * length, centerY);
+        ctx.beginPath();
+        ctx.moveTo(margin + (3/10) * length, centerY);
+        ctx.lineTo(margin + (7/10) * length, centerY);
+        ctx.stroke();
+        break;
+        
+      case 'closed':
+        // [a, b] - Círculos rellenos en -2 y 2
+        drawFilledCircle(margin + (3/10) * length, centerY);
+        drawFilledCircle(margin + (7/10) * length, centerY);
+        ctx.beginPath();
+        ctx.moveTo(margin + (3/10) * length, centerY);
+        ctx.lineTo(margin + (7/10) * length, centerY);
+        ctx.stroke();
+        break;
+        
+      case 'halfOpen1':
+        // [a, b) - Círculo relleno en -2, hueco en 2
+        drawFilledCircle(margin + (3/10) * length, centerY);
+        drawHollowCircle(margin + (7/10) * length, centerY);
+        ctx.beginPath();
+        ctx.moveTo(margin + (3/10) * length, centerY);
+        ctx.lineTo(margin + (7/10) * length, centerY);
+        ctx.stroke();
+        break;
+        
+      case 'halfOpen2':
+        // (a, b] - Círculo hueco en -2, relleno en 2
+        drawHollowCircle(margin + (3/10) * length, centerY);
+        drawFilledCircle(margin + (7/10) * length, centerY);
+        ctx.beginPath();
+        ctx.moveTo(margin + (3/10) * length, centerY);
+        ctx.lineTo(margin + (7/10) * length, centerY);
+        ctx.stroke();
+        break;
+        
+      case 'infinitePos':
+        // [a, ∞) - Círculo relleno en -2 y flecha hacia la derecha
+        drawFilledCircle(margin + (3/10) * length, centerY);
+        ctx.beginPath();
+        ctx.moveTo(margin + (3/10) * length, centerY);
+        ctx.lineTo(margin + length, centerY);
+        ctx.stroke();
+        // Flecha
+        drawArrowhead(margin + length, centerY, Math.PI);
+        break;
+        
+      case 'infiniteNeg':
+        // (-∞, b] - Flecha hacia la izquierda y círculo relleno en 2
+        drawFilledCircle(margin + (7/10) * length, centerY);
+        ctx.beginPath();
+        ctx.moveTo(margin, centerY);
+        ctx.lineTo(margin + (7/10) * length, centerY);
+        ctx.stroke();
+        // Flecha
+        drawArrowhead(margin, centerY, 0);
+        break;
+    }
+  }
+  
+  function drawHollowCircle(x, y) {
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI * 2);
+    ctx.strokeStyle = '#2b7a78';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = 'white';
+    ctx.fill();
+  }
+  
+  function drawFilledCircle(x, y) {
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#2b7a78';
+    ctx.fill();
+  }
+  
+  function drawArrowhead(x, y, angle) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(-8, -5);
+    ctx.lineTo(-8, 5);
+    ctx.closePath();
+    ctx.fillStyle = '#2b7a78';
+    ctx.fill();
+    ctx.restore();
+  }
+  
+  // Event listeners
+  selector.addEventListener('change', () => {
+    drawInterval(selector.value);
+  });
+  
+  // Inicializar
+  drawInterval(selector.value);
+  
+  // Práctica de intervalos
+  function showIntervalQuestion() {
+    const question = intervalQuestions[currentQuestion];
+    document.getElementById('intervalQuestion').textContent = `Selecciona el tipo de intervalo para ${question.set}`;
+    document.getElementById('intervalFeedback').textContent = '';
+  }
+  
+  document.querySelectorAll('.interval-option-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const userAnswer = this.getAttribute('data-answer');
+      const correctAnswer = intervalQuestions[currentQuestion].answer;
+      const feedback = document.getElementById('intervalFeedback');
+      
+      if (userAnswer === correctAnswer) {
+        feedback.textContent = '¡Correcto! ✓';
+        feedback.style.color = 'green';
+      } else {
+        feedback.textContent = `Incorrecto. La respuesta es: ${intervalQuestions[currentQuestion].representation}`;
+        feedback.style.color = 'red';
+      }
+    });
+  });
+  
+  document.getElementById('nextIntervalBtn').addEventListener('click', function() {
+    currentQuestion = (currentQuestion + 1) % intervalQuestions.length;
+    showIntervalQuestion();
+  });
+  
+  // Inicializar preguntas
+  showIntervalQuestion();
+})();
+</script>
+
+<style>
+.interval-option-btn {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #f9f9f9;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.interval-option-btn:hover {
+  background: #e9e9e9;
+  border-color: #2b7a78;
+}
+</style>
+
+  <!-- EXAMEN FINAL -->
+  <div class="panel" style="margin-top:18px;">
+    <h3>Examen breve (al final): Evaluación</h3>
+    <p class="small">Responde las 6 preguntas. Cuando termines pulsa <em>Enviar</em> para ver tu puntuación y las explicaciones.</p>
+    <form id="finalExamForm">
+      <ol>
+        <li>
+          ¿Cuál de las siguientes afirmaciones corresponde a la completitud de ℝ?
+          <div><label><input type="radio" name="q1" value="a"> Todo conjunto no vacío tiene mínimo.</label></div>
+          <div><label><input type="radio" name="q1" value="b"> Todo conjunto no vacío acotado superiormente tiene supremo.</label></div>
+          <div><label><input type="radio" name="q1" value="c"> Todo número real tiene inverso multiplicativo.</label></div>
+        </li>
+        <li style="margin-top:8px">
+          La tricotomía para a,b ∈ ℝ significa:
+          <div><label><input type="radio" name="q2" value="a"> a≤b o b≤a (ambos pueden ser verdaderos)</label></div>
+          <div><label><input type="radio" name="q2" value="b"> exactamente una de: a<b, a=b, a>b</label></div>
+          <div><label><input type="radio" name="q2" value="c"> a<b y b<a son siempre verdaderos</label></div>
+        </li>
+        <li style="margin-top:8px">
+          ¿Cuál es un ejemplo de número irracional?
+          <div><label><input type="radio" name="q3" value="a"> 22/7</label></div>
+          <div><label><input type="radio" name="q3" value="b"> sqrt(2)</label></div>
+          <div><label><input type="radio" name="q3" value="c"> 0.75</label></div>
+        </li>
+        <li style="margin-top:8px">
+          ¿Qué propiedad asegura que a(b+c)=ab+ac?
+          <div><label><input type="radio" name="q4" value="a"> Conmutatividad</label></div>
+          <div><label><input type="radio" name="q4" value="b"> Distributividad</label></div>
+          <div><label><input type="radio" name="q4" value="c"> Transitividad</label></div>
+        </li>
+        <li style="margin-top:8px">
+          ¿Cuál conjunto contiene a todos los demás (jerárquicamente)?
+          <div><label><input type="radio" name="q5" value="a"> ℕ</label></div>
+          <div><label><input type="radio" name="q5" value="b"> ℝ</label></div>
+          <div><label><input type="radio" name="q5" value="c"> ℚ</label></div>
+        </li>
+        <li style="margin-top:8px">
+          Si a < b y c > 0, entonces:
+          <div><label><input type="radio" name="q6" value="a"> ac < bc</label></div>
+          <div><label><input type="radio" name="q6" value="b"> ac > bc</label></div>
+          <div><label><input type="radio" name="q6" value="c"> no se puede comparar</label></div>
+        </li>
+      </ol>
+      <div style="margin-top:12px">
+        <button type="button" class="btn" id="submitExamBtn">Enviar</button>
+        <button type="button" class="btn mutebtn" id="resetExamBtn">Reiniciar</button>
+      </div>
+    </form>
+    <div id="examResult" style="margin-top:12px;font-weight:700"></div>
+  </div>
+
+</div>
+
+<!-- ESTILOS LOCALES (puedes integrarlos en tu CSS principal) -->
+<style>
+  .math-sets-section .panel { box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+  .math-sets-section h3 { margin-top:0; }
+  .math-sets-section .btn { padding:8px 10px; border-radius:6px; background:#2b7a78; color:white; border:0; cursor:pointer; }
+  .math-sets-section .mutebtn { background:#ddd; color:#222; }
+  .math-sets-section input[type="text"], .math-sets-section input[type="number"] { border:1px solid #ddd; border-radius:6px; padding:8px; }
+  .math-sets-section .small { font-size:0.9rem; color:#555; }
+  .math-sets-section .panel ol { padding-left:18px; }
+</style>
+
+<!-- SCRIPT: lógica interactiva -->
+<script>
+(function(){
+  /* ---------- RUEDA (conjuntos) ---------- */
+  const canvas = document.getElementById('numberSetsWheelFull');
+  const ctx = canvas.getContext('2d');
+  const radius = canvas.width/2;
+  const sets = [
+    { key:'N', name:'ℕ — Naturales', color:'#ffd54f', info:'Naturales: 1,2,3,... (a veces 0)' },
+    { key:'Z', name:'ℤ — Enteros', color:'#ffb74d', info:'Enteros: ..., -2,-1,0,1,2,...' },
+    { key:'Q', name:'ℚ — Racionales', color:'#aed581', info:'Racionales: p/q, fracciones y decimales finitos' },
+    { key:'R', name:'ℝ — Reales', color:'#81d4fa', info:'Reales: racionales e irracionales (π,√2)' },
+    { key:'C', name:'ℂ — Complejos', color:'#ce93d8', info:'Complejos: a + bi, con i² = -1' }
+  ];
+
+  function drawWheelFull(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const angleStep = (2*Math.PI)/sets.length;
+    sets.forEach((s,i)=>{
+      const start = i*angleStep - Math.PI/2;
+      const end = start + angleStep;
+      // sector
+      ctx.beginPath();
+      ctx.moveTo(radius, radius);
+      ctx.arc(radius,radius, radius-8, start, end);
+      ctx.closePath();
+      ctx.fillStyle = s.color;
+      ctx.fill();
+      // border
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      // label outside with a line
+      const mid = (start+end)/2;
+      const lx = radius + Math.cos(mid) * (radius*0.65);
+      const ly = radius + Math.sin(mid) * (radius*0.65);
+      ctx.fillStyle = '#123';
+      ctx.font = 'bold 14px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(s.name, lx, ly);
+    });
+    // center title
+    ctx.fillStyle = '#123';
+    ctx.font = 'bold 16px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('Conjuntos numéricos', radius, radius - 6);
+  }
+
+  canvas.addEventListener('click', (ev)=>{
+    const rect = canvas.getBoundingClientRect();
+    const x = ev.clientX - rect.left - radius;
+    const y = ev.clientY - rect.top - radius;
+    const angle = Math.atan2(y,x);
+    const norm = angle < -Math.PI/2 ? angle + 2*Math.PI : angle;
+    const index = Math.floor((norm + Math.PI/2) / ((2*Math.PI)/sets.length)) % sets.length;
+    const s = sets[index];
+    document.getElementById('numberSetInfoFull').textContent = `${s.name}: ${s.info}`;
+  });
+
+  drawWheelFull();
+
+  /* ---------- PERTENENCIA (heurística) ---------- */
+  function isIntegerString(str){
+    // acepta -3, 0, 42
+    return /^-?\d+$/.test(str.trim());
+  }
+  function isFractionString(str){
+    return /^-?\d+\/\d+$/.test(str.trim());
+  }
+  function isComplexString(str){
+    // detecta cosas con 'i' o 'j'
+    return /i|j/.test(str.trim().toLowerCase());
+  }
+  function isSqrtForm(str){
+    return /^sqrt\(\s*\d+(\.\d+)?\s*\)$/i.test(str.trim());
+  }
+
+  document.getElementById('checkBelongBtn').addEventListener('click', ()=>{
+    const raw = document.getElementById('numCheckInput').value.trim();
+    const out = document.getElementById('belongResult');
+    if(!raw){ out.textContent = 'Introduce un número o expresión (ej: 3, -1/2, pi, sqrt(2), 2+3i).'; return; }
+
+    const lower = raw.toLowerCase();
+
+    // heurísticas: detectar complejos
+    if(isComplexString(lower) && !/^pi$|^e$/.test(lower)){
+      out.innerHTML = `${raw} ∈ ℂ (complejo). Puede contener parte real e imaginaria.`;
+      return;
+    }
+
+    // constantes
+    if(lower === 'pi' || lower === 'π' || lower === 'sqrt(2)' || lower === 'e' || lower === 'phi' || lower === '√2'){
+      // algunos son irracionales
+      const irrationals = ['pi','π','sqrt(2)','√2','e','phi'];
+      if(irrationals.includes(lower)){
+        out.innerHTML = `${raw} ∈ ℝ (irracional). Ej.: π ≈ 3.14159…`;
+        return;
+      }
+    }
+
+    // fracción p/q
+    if(isFractionString(lower)){
+      out.innerHTML = `${raw} ∈ ℚ (racional), expresable como fracción.`;
+      return;
+    }
+
+    // entero
+    if(isIntegerString(lower)){
+      const n = parseInt(lower,10);
+      // pertenece a ℕ si >0 (según convención mostrada); incluir 0 opcionalmente
+      const inN = n > 0 ? true : (n === 0 ? 'depende' : false);
+      out.innerHTML = `${raw} ∈ ℤ (entero). ${inN === true ? 'También pertenece a ℕ (si se incluye 0 depende de convención).' : inN === 'depende' ? 'Cuidado: 0 puede o no contarse en ℕ según la convención.' : ''}`;
+      return;
+    }
+
+    // decimal -> tratar como racional aproximado (terminante) o posible irracional
+    const asNum = Number(raw);
+    if(!Number.isNaN(asNum) && isFinite(asNum)){
+      // si es decimal finito (como 2.5) lo consideramos racional; si tiene muchos decimales y tokenes comunes (pi/e) ya tratado
+      if(Number.isInteger(asNum)){
+        // cubierto arriba
+      } else {
+        // heurística: decimales finitos => racional (ej. 0.75). Si nota "..." o muchos decimales, sugerir irracional.
+        out.innerHTML = `${raw} ≈ ${asNum}. Probablemente ∈ ℚ si es decimal finito (p/q). Si es símbolo como π o √2 es irracional (∉ ℚ).`;
+        return;
+      }
+    }
+
+    // sqrt(n) como sintaxis
+    if(isSqrtForm(lower)){
+      // sqrt(n) probablemente irracional salvo cuadrados perfectos
+      const inside = Number(lower.match(/\d+(\.\d+)?/)[0]);
+      const root = Math.sqrt(inside);
+      if(Number.isInteger(root)){
+        out.innerHTML = `${raw} = ${root} ∈ ℤ (entero).`;
+      } else {
+        out.innerHTML = `${raw} es típicamente irracional (∈ ℝ \ ℚ). Ej.: sqrt(2) es irracional.`;
+      }
+      return;
+    }
+
+    out.innerHTML = `No se pudo clasificar con certeza '${raw}'. Usa notación: entero, p/q, sqrt(n), pi, e, o forma a+bi para complejos.`;
+  });
+
+  /* ---------- ORDEN: ejercicio (ordenar) ---------- */
+  let currentOrderSet = [];
+  function randomOrderSet(){
+    // generación de 4 números variados
+    const pool = [
+      '3', '-1', '1/2', '0.25', 'pi', 'sqrt(2)', '7', '-3/4', '2.5', '-2', 'e'
+    ];
+    // elige 4 aleatorios distintos
+    const chosen = [];
+    while(chosen.length < 4){
+      const cand = pool[Math.floor(Math.random()*pool.length)];
+      if(!chosen.includes(cand)) chosen.push(cand);
+    }
+    currentOrderSet = chosen;
+    renderOrderList();
+  }
+  function toNumericApprox(token){
+    const t = token.toLowerCase();
+    if(t === 'pi' || t === 'π') return Math.PI;
+    if(t === 'e') return Math.E;
+    if(/^sqrt/.test(t)) {
+      const m = t.match(/\d+(\.\d+)?/);
+      if(m) return Math.sqrt(Number(m[0]));
+    }
+    if(/^\d+\/\d+$/.test(t)){ const parts = t.split('/'); return Number(parts[0])/Number(parts[1]); }
+    if(!isNaN(Number(t))) return Number(t);
+    return NaN;
+  }
+  function renderOrderList(){
+    const container = document.getElementById('orderList');
+    container.innerHTML = '';
+    currentOrderSet.forEach((tok,idx)=>{
+      const item = document.createElement('div');
+      item.style.padding = '8px';
+      item.style.border = '1px solid #eee';
+      item.style.borderRadius = '6px';
+      item.style.marginBottom = '6px';
+      item.draggable = true;
+      item.dataset.idx = idx;
+      item.textContent = tok;
+      item.className = 'draggable-order-item';
+      container.appendChild(item);
+    });
+    // permitir arrastrar para reordenar (muy básico)
+    let dragEl = null;
+    container.querySelectorAll('.draggable-order-item').forEach(el=>{
+      el.addEventListener('dragstart', (e)=>{ dragEl = el; e.dataTransfer.effectAllowed = 'move'; });
+      el.addEventListener('dragover', (e)=>{ e.preventDefault(); e.dataTransfer.dropEffect='move'; });
+      el.addEventListener('drop', (e)=>{
+        e.preventDefault();
+        if(!dragEl) return;
+        if(el === dragEl) return;
+        const nodes = Array.from(container.children);
+        const from = nodes.indexOf(dragEl);
+        const to = nodes.indexOf(el);
+        if(from < to) el.after(dragEl); else el.before(dragEl);
+      });
+    });
+  }
+  document.getElementById('shuffleOrderBtn').addEventListener('click', ()=> {
+    randomOrderSet();
+    document.getElementById('orderFeedback').textContent = '';
+  });
+  document.getElementById('checkOrderBtn').addEventListener('click', ()=>{
+    const list = Array.from(document.getElementById('orderList').children).map(n=>n.textContent);
+    const arr = list.map(toNumericApprox);
+    if(arr.some(isNaN)){ document.getElementById('orderFeedback').textContent = 'Hay elementos no numéricos; no puedo comparar.'; return; }
+    // queremos orden ascendente (menor→mayor)
+    const correct = arr.slice().sort((a,b)=>a-b);
+    const ok = correct.every((v,i)=>Math.abs(v - arr[i]) < 1e-9);
+    document.getElementById('orderFeedback').textContent = ok ? 'Orden correcto (menor → mayor) ✓' : 'Orden incorrecto. Intenta de nuevo.';
+  });
+  document.getElementById('resetOrderBtn').addEventListener('click', ()=> { renderOrderList(); document.getElementById('orderFeedback').textContent=''; });
+  // init
+  randomOrderSet();
+
+  /* ---------- COMPATIBILIDAD (suma/mult con desigualdades) ---------- */
+  document.getElementById('checkCompatBtn').addEventListener('click', ()=>{
+    const a = Number(document.getElementById('aVal').value);
+    const b = Number(document.getElementById('bVal').value);
+    const out = document.getElementById('compatResult');
+    if(isNaN(a) || isNaN(b)){ out.textContent = 'Introduce números válidos.'; return; }
+    const sumCheck = (a < b) ? `${a}+5 < ${b}+5 → ${a+5} < ${b+5} ✓` : `${a} < ${b} no se cumple`;
+    const multCheck = (0 < 2) ? 'Ejemplo de compatibilidad de multiplicación: si 0<a y 0<b entonces 0<ab' : '';
+    out.innerHTML = sumCheck;
+  });
+
+  /* ---------- EJERCICIOS AXIOMAS (MCQ) ---------- */
+  const axiomsQ = [
+    {q:'¿Cuál axioma asegura que para cualquier real a existe -a?', options:['Inverso aditivo','Distributividad','Commutatividad'], a:0, explain:'El inverso aditivo: a + (-a) = 0.'},
+    {q:'¿Qué axioma define que a(b+c)=ab+ac?', options:['Associatividad','Distributividad','Elemento neutro'], a:1, explain:'Distributividad del producto sobre la suma.'},
+    {q:'¿Cuál es la propiedad de orden que obliga a elegir exactamente una entre a < b, a = b, a > b?', options:['Transitividad','Tricotomía','Compatibilidad'], a:1, explain:'Tricotomía: exactamente una de las relaciones se cumple.'}
+  ];
+  const axDiv = document.getElementById('axiomExercises');
+  axiomsQ.forEach((Q,i)=>{
+    const block = document.createElement('div');
+    block.style.marginBottom = '10px';
+    block.innerHTML = `<div><strong>${Q.q}</strong></div>`;
+    Q.options.forEach((opt,j)=>{
+      const id = `axq${i}_${j}`;
+      const wrap = document.createElement('div');
+      wrap.innerHTML = `<label style="display:block;margin-top:4px"><input type="radio" name="ax${i}" id="${id}" value="${j}"> ${opt}</label>`;
+      block.appendChild(wrap);
+    });
+    const btn = document.createElement('button'); btn.className='btn mutebtn'; btn.style.marginTop='6px'; btn.textContent='Comprobar';
+    const fb = document.createElement('div'); fb.style.marginTop='6px'; fb.style.fontWeight='600';
+    btn.addEventListener('click', ()=>{
+      const selected = block.querySelector(`input[name="ax${i}"]:checked`);
+      if(!selected){ fb.textContent='Selecciona una opción.'; return; }
+      if(Number(selected.value) === Q.a) fb.innerHTML = `Correcto ✓ — ${Q.explain}`;
+      else fb.innerHTML = `Incorrecto ✗ — ${Q.explain}`;
+    });
+    block.appendChild(btn); block.appendChild(fb);
+    axDiv.appendChild(block);
+  });
+
+  /* ---------- EXAMEN FINAL ---------- */
+  const examAnswers = { q1:'b', q2:'b', q3:'b', q4:'b', q5:'b', q6:'a' };
+  document.getElementById('submitExamBtn').addEventListener('click', ()=>{
+    const form = document.getElementById('finalExamForm');
+    const data = new FormData(form);
+    let score = 0, total = Object.keys(examAnswers).length;
+    const explanations = {
+      q1:'La completitud: todo subconjunto no vacío acotado superiormente tiene supremo (b).',
+      q2:'Tricotomía: exactamente una de las tres relaciones (b).',
+      q3:'√2 es irracional (b).',
+      q4:'Distributividad es la que garantiza a(b+c)=ab+ac (b).',
+      q5:'ℝ contiene a ℚ y a ℤ y a ℕ: es el conjunto más amplio de las opciones (b).',
+      q6:'Si a < b y c>0 entonces ac<bc (multiplicación por positivo preserva desigualdad) (a).'
+    };
+    const resultDiv = document.getElementById('examResult');
+    let details = '';
+    for(let i=1;i<=6;i++){
+      const key = 'q'+i;
+      const ans = data.get(key);
+      if(ans === examAnswers[key]){ score++; details += `<div>Pregunta ${i}: ✓</div>`; }
+      else { details += `<div>Pregunta ${i}: ✗ — ${explanations[key]}</div>`; }
+    }
+    resultDiv.innerHTML = `Tu puntuación: ${score}/${total}<div style="margin-top:8px">${details}</div>`;
+  });
+  document.getElementById('resetExamBtn').addEventListener('click', ()=> {
+    document.getElementById('finalExamForm').reset();
+    document.getElementById('examResult').textContent = '';
+  });
+
+  // mejorar accesibilidad: foco en input al cargar
+  document.getElementById('numCheckInput').addEventListener('keydown', (e)=>{ if(e.key === 'Enter') document.getElementById('checkBelongBtn').click(); });
+
+})();
+</script>
+
