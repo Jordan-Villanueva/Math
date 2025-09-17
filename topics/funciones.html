@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Funciones Matemáticas - Teoría y Gráficas</title>
+  <style>
+    :root { 
+      --bg: #fafafa; 
+      --card: #ffffff; 
+      --accent: #2b7a78; 
+      --muted: #666; 
+      --light-accent: rgba(43, 122, 120, 0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0 auto;
+      max-width: 1400px;
+      padding: 20px;
+      line-height: 1.6;
+      color: #333;
+      background: linear-gradient(#f7fbfb, #eef6f6);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: linear-gradient(135deg, var(--accent), #1a5f5d);
+      color: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      font-size: 1.6rem;
+      margin-bottom: 15px;
+      color: var(--accent);
+    }
+
+    h3 {
+      font-size: 1.3rem;
+      margin-bottom: 12px;
+      color: var(--accent);
+    }
+
+    .subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+
+    .panel {
+      background: var(--card);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      margin-bottom: 25px;
+      transition: transform 0.3s ease;
+    }
+
+    .panel:hover {
+      transform: translateY(-5px);
+    }
+
+    .flex-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .theory-container {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .graphics-container {
+      flex: 2;
+      min-width: 300px;
+    }
+
+    .small { 
+      font-size: 0.9rem; 
+      color: var(--muted); 
+      margin-bottom: 10px;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 12px 15px;
+      font-size: 1rem;
+      margin-bottom: 15px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      background: white;
+      color: #333;
+      transition: border-color 0.3s;
+    }
+
+    select:focus, input:focus {
+      border-color: var(--accent);
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(43, 122, 120, 0.2);
+    }
+
+    .btn {
+      padding: 12px 18px;
+      border-radius: 8px;
+      border: none;
+      background: var(--accent);
+      color: white;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+
+    .btn:hover { 
+      background: #1f5f5d; 
+    }
+
+    .mutebtn {
+      background: #ddd;
+      color: #333;
+    }
+
+    .mutebtn:hover { 
+      background: #ccc; 
+    }
+
+    .graph-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin: 15px 0;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .control-group label {
+      font-size: 0.95rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .animation-container {
+      width: 100%;
+      margin: 20px 0;
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      position: relative;
+    }
+    
+    #graphCanvas {
+      display: block;
+      width: 100%;
+      height: 400px;
+      background: #fcfefe;
+    }
+
+    .zoom-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+    
+    .zoom-btn {
+      padding: 8px 14px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    .zoom-btn:hover {
+      background: #f0f0f0;
+    }
+    
+    .zoom-info {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-left: 10px;
+    }
+
+    .output {
+      margin-top: 20px;
+      padding: 20px;
+      background: #e8eaf6;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      font-family: 'Courier New', monospace;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      border-left: 5px solid var(--accent);
+    }
+
+    .theory-content {
+      max-height: 400px;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+
+    .theory-section {
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .theory-section h3 {
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .theory-section p {
+      margin-bottom: 10px;
+      line-height: 1.6;
+    }
+
+    .theory-list {
+      padding-left: 20px;
+      margin-bottom: 10px;
+    }
+
+    .theory-list li {
+      margin-bottom: 8px;
+    }
+
+    @media (max-width: 900px) {
+      .flex-container {
+        flex-direction: column;
+      }
+      
+      .panel {
+        padding: 15px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      h2 {
+        font-size: 1.4rem;
+      }
+      
+      #graphCanvas {
+        height: 300px;
+      }
+      
+      .zoom-controls {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>Funciones Matemáticas - Teoría y Gráficas</h1>
+      <p class="subtitle">Visualiza y comprende las funciones matemáticas con gráficas interactivas</p>
+    </header>
+
+    <div class="flex-container">
+      <div class="panel theory-container">
+        <h2>Teoría de Funciones</h2>
+        
+        <div class="theory-content">
+          <div class="theory-section">
+            <h3>¿Qué es una función?</h3>
+            <p>Una función es una relación entre dos conjuntos (dominio y codominio) donde cada elemento del dominio se relaciona con exactamente un elemento del codominio.</p>
+            <p>Notación: f: A → B, donde A es el dominio y B es el codominio.</p>
+          </div>
+          
+          <div class="theory-section">
+            <h3>Tipos de Funciones</h3>
+            <ul class="theory-list">
+              <li><strong>Lineales:</strong> f(x) = mx + b</li>
+              <li><strong>Cuadráticas:</strong> f(x) = ax² + bx + c</li>
+              <li><strong>Polinómicas:</strong> f(x) = aₙxⁿ + ... + a₁x + a₀</li>
+              <li><strong>Racionales:</strong> f(x) = P(x)/Q(x)</li>
+              <li><strong>Exponenciales:</strong> f(x) = aˣ</li>
+              <li><strong>Logarítmicas:</strong> f(x) = logₐ(x)</li>
+              <li><strong>Trigonométricas:</strong> sen(x), cos(x), tan(x)</li>
+              <li><strong>Valor absoluto:</strong> f(x) = |x|</li>
+            </ul>
+          </div>
+          
+          <div class="theory-section">
+            <h3>Dominio de una función</h3>
+            <p>El dominio de una función es el conjunto de todos los valores de entrada (x) para los cuales la función está definida.</p>
+            <p><strong>Ejemplos:</strong></p>
+            <ul class="theory-list">
+              <li>f(x) = √x → Dominio: x ≥ 0</li>
+              <li>f(x) = 1/x → Dominio: x ≠ 0</li>
+              <li>f(x) = log(x) → Dominio: x > 0</li>
+            </ul>
+          </div>
+          
+          <div class="theory-section">
+            <h3>Rango de una función</h3>
+            <p>El rango de una función es el conjunto de todos los valores de salida (y) que resultan de evaluar la función en su dominio.</p>
+            <p><strong>Ejemplos:</strong></p>
+            <ul class="theory-list">
+              <li>f(x) = x² → Rango: y ≥ 0</li>
+              <li>f(x) = sen(x) → Rango: -1 ≤ y ≤ 1</li>
+              <li>f(x) = eˣ → Rango: y > 0</li>
+            </ul>
+          </div>
+          
+          <div class="theory-section">
+            <h3>Composición de funciones</h3>
+            <p>La composición de funciones es la aplicación sucesiva de funciones. Se denota como (f ∘ g)(x) = f(g(x)).</p>
+            <p><strong>Ejemplo:</strong> Si f(x) = x² y g(x) = x + 1, entonces (f ∘ g)(x) = f(g(x)) = (x + 1)²</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="panel graphics-container">
+        <h2>Visualización de Funciones</h2>
+        <p class="small">Selecciona el tipo de función y ajusta sus parámetros.</p>
+        
+        <div class="control-group">
+          <label for="functionType">Tipo de función:</label>
+          <select id="functionType">
+            <option value="linear">Lineal (mx + b)</option>
+            <option value="quadratic">Cuadrática (ax² + bx + c)</option>
+            <option value="polynomial">Polinómica (ax³ + bx² + cx + d)</option>
+            <option value="rational">Racional (P(x)/Q(x))</option>
+            <option value="exponential">Exponencial (aˣ)</option>
+            <option value="logarithmic">Logarítmica (logₐ(x))</option>
+            <option value="trigonometric">Trigonométrica</option>
+            <option value="absolute">Valor absoluto (|x|)</option>
+          </select>
+        </div>
+        
+        <div id="dynamicControls">
+          <div class="control-group">
+            <label for="paramM">Pendiente (m):</label>
+            <input type="number" id="paramM" value="1" step="0.1">
+          </div>
+          <div class="control-group">
+            <label for="paramB">Intercepto (b):</label>
+            <input type="number" id="paramB" value="0" step="0.1">
+          </div>
+        </div>
+        
+        <button class="btn" id="plotBtn">Graficar Función</button>
+        <button class="btn mutebtn" id="resetBtn">Reiniciar</button>
+        
+        <div class="output" id="functionOutput">
+          La información de la función aparecerá aquí después de graficar.
+        </div>
+        
+        <div class="animation-container">
+          <canvas id="graphCanvas"></canvas>
+        </div>
+        
+        <div class="zoom-controls">
+          <button class="zoom-btn" id="zoomInBtn">+ Zoom</button>
+          <button class="zoom-btn" id="zoomOutBtn">- Zoom</button>
+          <button class="zoom-btn" id="panLeftBtn">←</button>
+          <button class="zoom-btn" id="panRightBtn">→</button>
+          <button class="zoom-btn" id="panUpBtn">↑</button>
+          <button class="zoom-btn" id="panDownBtn">↓</button>
+          <button class="btn mutebtn" id="resetViewBtn">Vista Predeterminada</button>
+          <button class="btn" id="autoViewBtn">Auto-ajustar Vista</button>
+          <span class="zoom-info" id="zoomLevelInfo">Zoom: 100%</span>
+        </div>
+        
+        <div class="graph-controls">
+          <div class="control-group">
+            <label for="xMin">X mínimo:</label>
+            <input type="number" id="xMin" value="-10" step="1">
+          </div>
+          <div class="control-group">
+            <label for="xMax">X máximo:</label>
+            <input type="number" id="xMax" value="10" step="1">
+          </div>
+          <div class="control-group">
+            <label for="yMin">Y mínimo:</label>
+            <input type="number" id="yMin" value="-10" step="1">
+          </div>
+          <div class="control-group">
+            <label for="yMax">Y máximo:</label>
+            <input type="number" id="yMax" value="10" step="1">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Variables globales
+    const canvas = document.getElementById('graphCanvas');
+    const ctx = canvas.getContext('2d');
+    let zoomLevel = 1;
+    let xMin = -10, xMax = 10, yMin = -10, yMax = 10;
+
+    // Inicializar el tamaño del canvas
+    function initCanvas() {
+      const container = canvas.parentElement;
+      canvas.width = container.clientWidth;
+      canvas.height = 400;
+      drawGrid();
+    }
+
+    // Dibujar la cuadrícula y ejes
+    function drawGrid() {
+      const width = canvas.width;
+      const height = canvas.height;
+      
+      // Limpiar el canvas
+      ctx.clearRect(0, 0, width, height);
+      ctx.fillStyle = '#fcfefe';
+      ctx.fillRect(0, 0, width, height);
+      
+      // Calcular transformaciones
+      const xScale = width / (xMax - xMin);
+      const yScale = height / (yMax - yMin);
+      
+      const xOffset = -xMin * xScale;
+      const yOffset = yMax * yScale;
+      
+      // Dibujar cuadrícula
+      ctx.strokeStyle = '#e0e0e0';
+      ctx.lineWidth = 1;
+      
+      // Líneas verticales
+      for (let x = Math.ceil(xMin); x <= xMax; x++) {
+        const pixelX = x * xScale + xOffset;
+        ctx.beginPath();
+        ctx.moveTo(pixelX, 0);
+        ctx.lineTo(pixelX, height);
+        ctx.stroke();
+      }
+      
+      // Líneas horizontales
+      for (let y = Math.ceil(yMin); y <= yMax; y++) {
+        const pixelY = yOffset - y * yScale;
+        ctx.beginPath();
+        ctx.moveTo(0, pixelY);
+        ctx.lineTo(width, pixelY);
+        ctx.stroke();
+      }
+      
+      // Dibujar ejes
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 2;
+      
+      // Eje X
+      const xAxisY = yOffset;
+      if (xAxisY >= 0 && xAxisY <= height) {
+        ctx.beginPath();
+        ctx.moveTo(0, xAxisY);
+        ctx.lineTo(width, xAxisY);
+        ctx.stroke();
+      }
+      
+      // Eje Y
+      const yAxisX = xOffset;
+      if (yAxisX >= 0 && yAxisX <= width) {
+        ctx.beginPath();
+        ctx.moveTo(yAxisX, 0);
+        ctx.lineTo(yAxisX, height);
+        ctx.stroke();
+      }
+      
+      // Dibujar marcas en los ejes
+      ctx.fillStyle = '#333';
+      ctx.font = '12px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      // Marcas en el eje X
+      for (let x = Math.ceil(xMin); x <= xMax; x++) {
+        if (x === 0) continue;
+        const pixelX = x * xScale + xOffset;
+        if (pixelX >= 0 && pixelX <= width) {
+          ctx.beginPath();
+          ctx.moveTo(pixelX, xAxisY - 5);
+          ctx.lineTo(pixelX, xAxisY + 5);
+          ctx.stroke();
+          ctx.fillText(x.toString(), pixelX, xAxisY + 15);
+        }
+      }
+      
+      // Marcas en el eje Y
+      for (let y = Math.ceil(yMin); y <= yMax; y++) {
+        if (y === 0) continue;
+        const pixelY = yOffset - y * yScale;
+        if (pixelY >= 0 && pixelY <= height) {
+          ctx.beginPath();
+          ctx.moveTo(yAxisX - 5, pixelY);
+          ctx.lineTo(yAxisX + 5, pixelY);
+          ctx.stroke();
+          ctx.fillText(y.toString(), yAxisX - 15, pixelY);
+        }
+      }
+      
+      // Origen
+      if (xOffset >= 0 && xOffset <= width && xAxisY >= 0 && xAxisY <= height) {
+        ctx.fillText("0", xOffset - 12, xAxisY + 15);
+      }
+    }
+
+    // Evaluar función según su tipo
+    function evaluateFunction(x, type) {
+      switch(type) {
+        case 'linear':
+          const m = parseFloat(document.getElementById('paramM').value) || 1;
+          const b = parseFloat(document.getElementById('paramB').value) || 0;
+          return m * x + b;
+          
+        case 'quadratic':
+          const a = parseFloat(document.getElementById('paramA').value) || 1;
+          const bq = parseFloat(document.getElementById('paramBq').value) || 0;
+          const c = parseFloat(document.getElementById('paramC').value) || 0;
+          return a * x * x + bq * x + c;
+          
+        case 'exponential':
+          const base = parseFloat(document.getElementById('paramBase').value) || Math.E;
+          return Math.pow(base, x);
+          
+        case 'logarithmic':
+          const logBase = parseFloat(document.getElementById('paramLogBase').value) || Math.E;
+          return Math.log(x) / Math.log(logBase);
+          
+        case 'trigonometric':
+          const trigType = document.getElementById('trigFunction').value;
+          const amplitude = parseFloat(document.getElementById('trigAmplitude').value) || 1;
+          const frequency = parseFloat(document.getElementById('trigFrequency').value) || 1;
+          const phase = parseFloat(document.getElementById('trigPhase').value) || 0;
+          const constant = parseFloat(document.getElementById('trigConstant').value) || 0;
+          
+          switch(trigType) {
+            case 'sin': return amplitude * Math.sin(frequency * x + phase) + constant;
+            case 'cos': return amplitude * Math.cos(frequency * x + phase) + constant;
+            case 'tan': return amplitude * Math.tan(frequency * x + phase) + constant;
+            default: return Math.sin(x);
+          }
+          
+        case 'absolute':
+          return Math.abs(x);
+          
+        default:
+          return x;
+      }
+    }
+
+    // Graficar función
+    function plotFunction() {
+      drawGrid();
+      
+      const type = document.getElementById('functionType').value;
+      const width = canvas.width;
+      const height = canvas.height;
+      
+      // Calcular transformaciones
+      const xScale = width / (xMax - xMin);
+      const yScale = height / (yMax - yMin);
+      const xOffset = -xMin * xScale;
+      const yOffset = yMax * yScale;
+      
+      // Dibujar la función
+      ctx.strokeStyle = '#2b7a78';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      
+      let firstPoint = true;
+      for (let pixelX = 0; pixelX <= width; pixelX++) {
+        const x = (pixelX - xOffset) / xScale;
+        
+        try {
+          const y = evaluateFunction(x, type);
+          const pixelY = yOffset - y * yScale;
+          
+          if (isFinite(pixelY) && pixelY >= -1000 && pixelY <= 1000) {
+            if (firstPoint) {
+              ctx.moveTo(pixelX, pixelY);
+              firstPoint = false;
+            } else {
+              ctx.lineTo(pixelX, pixelY);
+            }
+          } else {
+            firstPoint = true;
+          }
+        } catch (e) {
+          firstPoint = true;
+        }
+      }
+      
+      ctx.stroke();
+      
+      // Mostrar información de la función
+      updateFunctionInfo(type);
+    }
+
+    // Actualizar información de la función
+    function updateFunctionInfo(type) {
+      let functionText = "";
+      let domain = "";
+      let range = "";
+      
+      switch(type) {
+        case 'linear':
+          const m = parseFloat(document.getElementById('paramM').value) || 1;
+          const b = parseFloat(document.getElementById('paramB').value) || 0;
+          functionText = `f(x) = ${m}x ${b >= 0 ? '+' : ''}${b}`;
+          domain = "Todos los números reales (ℝ)";
+          range = "Todos los números reales (ℝ)";
+          break;
+          
+        case 'quadratic':
+          const a = parseFloat(document.getElementById('paramA').value) || 1;
+          const bq = parseFloat(document.getElementById('paramBq').value) || 0;
+          const c = parseFloat(document.getElementById('paramC').value) || 0;
+          functionText = `f(x) = ${a}x² ${bq >= 0 ? '+' : ''}${bq}x ${c >= 0 ? '+' : ''}${c}`;
+          domain = "Todos los números reales (ℝ)";
+          if (a > 0) {
+            const vertexY = c - (bq * bq) / (4 * a);
+            range = `[${vertexY}, ∞)`;
+          } else {
+            const vertexY = c - (bq * bq) / (4 * a);
+            range = `(-∞, ${vertexY}]`;
+          }
+          break;
+          
+        case 'exponential':
+          const base = parseFloat(document.getElementById('paramBase').value) || Math.E;
+          functionText = `f(x) = ${base}ˣ`;
+          domain = "Todos los números reales (ℝ)";
+          range = "(0, ∞)";
+          break;
+          
+        case 'logarithmic':
+          const logBase = parseFloat(document.getElementById('paramLogBase').value) || Math.E;
+          functionText = `f(x) = log${logBase}(x)`;
+          domain = "(0, ∞)";
+          range = "Todos los números reales (ℝ)";
+          break;
+          
+        case 'trigonometric':
+          const trigType = document.getElementById('trigFunction').value;
+          const amplitude = parseFloat(document.getElementById('trigAmplitude').value) || 1;
+          const frequency = parseFloat(document.getElementById('trigFrequency').value) || 1;
+          const phase = parseFloat(document.getElementById('trigPhase').value) || 0;
+          const constant = parseFloat(document.getElementById('trigConstant').value) || 0;
+          
+          functionText = `f(x) = ${amplitude}${trigType}(${frequency}x ${phase >= 0 ? '+' : ''}${phase}) ${constant >= 0 ? '+' : ''}${constant}`;
+          domain = "Todos los números reales (ℝ)";
+          
+          if (trigType === 'sin' || trigType === 'cos') {
+            range = `[${constant - amplitude}, ${constant + amplitude}]`;
+          } else {
+            range = "Todos los números reales (ℝ)";
+          }
+          break;
+          
+        case 'absolute':
+          functionText = "f(x) = |x|";
+          domain = "Todos los números reales (ℝ)";
+          range = "[0, ∞)";
+          break;
+      }
+      
+      document.getElementById('functionOutput').textContent = 
+        `Función: ${functionText}\nDominio: ${domain}\nRango: ${range}`;
+    }
+
+    // Actualizar controles según el tipo de función
+    function updateControls() {
+      const type = document.getElementById('functionType').value;
+      const controlsContainer = document.getElementById('dynamicControls');
+      
+      let controlsHTML = '';
+      
+      switch(type) {
+        case 'linear':
+          controlsHTML = `
+            <div class="control-group">
+              <label for="paramM">Pendiente (m):</label>
+              <input type="number" id="paramM" value="1" step="0.1">
+            </div>
+            <div class="control-group">
+              <label for="paramB">Intercepto (b):</label>
+              <input type="number" id="paramB" value="0" step="0.1">
+            </div>
+          `;
+          break;
+          
+        case 'quadratic':
+          controlsHTML = `
+            <div class="control-group">
+              <label for="paramA">Coeficiente a:</label>
+              <input type="number" id="paramA" value="1" step="0.1">
+            </div>
+            <div class="control-group">
+              <label for="paramBq">Coeficiente b:</label>
+              <input type="number" id="paramBq" value="0" step="0.1">
+            </div>
+            <div class="control-group">
+              <label for="paramC">Coeficiente c:</label>
+              <input type="number" id="paramC" value="0" step="0.1">
+            </div>
+          `;
+          break;
+          
+        case 'exponential':
+          controlsHTML = `
+            <div class="control-group">
+              <label for="paramBase">Base:</label>
+              <input type="number" id="paramBase" value="${Math.E.toFixed(2)}" step="0.1">
+            </div>
+          `;
+          break;
+          
+        case 'logarithmic':
+          controlsHTML = `
+            <div class="control-group">
+              <label for="paramLogBase">Base:</label>
+              <input type="number" id="paramLogBase" value="${Math.E.toFixed(2)}" step="0.1" min="0.1">
+            </div>
+          `;
+          break;
+          
+        case 'trigonometric':
+          controlsHTML = `
+            <div class="control-group">
+              <label for="trigFunction">Función:</label>
+              <select id="trigFunction">
+                <option value="sin">seno</option>
+                <option value="cos">coseno</option>
+                <option value="tan">tangente</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label for="trigAmplitude">Amplitud:</label>
+              <input type="number" id="trigAmplitude" value="1" step="0.1">
+            </div>
+            <div class="control-group">
+              <label for="trigFrequency">Frecuencia:</label>
+              <input type="number" id="trigFrequency" value="1" step="0.1">
+            </div>
+            <div class="control-group">
+              <label for="trigPhase">Fase:</label>
+              <input type="number" id="trigPhase" value="0" step="0.1">
+            </div>
+            <div class="control-group">
+              <label for="trigConstant">Constante:</label>
+              <input type="number" id="trigConstant" value="0" step="0.1">
+            </div>
+          `;
+          break;
+          
+        case 'absolute':
+          controlsHTML = `<p>f(x) = |x|</p>`;
+          break;
+      }
+      
+      controlsContainer.innerHTML = controlsHTML;
+    }
+
+    // Funciones de zoom y desplazamiento
+    function zoomIn() {
+      const centerX = (xMin + xMax) / 2;
+      const centerY = (yMin + yMax) / 2;
+      const rangeX = (xMax - xMin) * 0.8;
+      const rangeY = (yMax - yMin) * 0.8;
+      
+      xMin = centerX - rangeX / 2;
+      xMax = centerX + rangeX / 2;
+      yMin = centerY - rangeY / 2;
+      yMax = centerY + rangeY / 2;
+      
+      updateView();
+    }
+
+    function zoomOut() {
+      const centerX = (xMin + xMax) / 2;
+      const centerY = (yMin + yMax) / 2;
+      const rangeX = (xMax - xMin) / 0.8;
+      const rangeY = (yMax - yMin) / 0.8;
+      
+      xMin = centerX - rangeX / 2;
+      xMax = centerX + rangeX / 2;
+      yMin = centerY - rangeY / 2;
+      yMax = centerY + rangeY / 2;
+      
+      updateView();
+    }
+
+    function panLeft() {
+      const rangeX = xMax - xMin;
+      xMin -= rangeX * 0.1;
+      xMax -= rangeX * 0.1;
+      updateView();
+    }
+
+    function panRight() {
+      const rangeX = xMax - xMin;
+      xMin += rangeX * 0.1;
+      xMax += rangeX * 0.1;
+      updateView();
+    }
+
+    function panUp() {
+      const rangeY = yMax - yMin;
+      yMin += rangeY * 0.1;
+      yMax += rangeY * 0.1;
+      updateView();
+    }
+
+    function panDown() {
+      const rangeY = yMax - yMin;
+      yMin -= rangeY * 0.1;
+      yMax -= rangeY * 0.1;
+      updateView();
+    }
+
+    function resetView() {
+      xMin = -10;
+      xMax = 10;
+      yMin = -10;
+      yMax = 10;
+      updateView();
+    }
+
+    function autoAdjustView() {
+      const type = document.getElementById('functionType').value;
+      
+      if (type === 'linear') {
+        xMin = -10;
+        xMax = 10;
+        yMin = -10;
+        yMax = 10;
+      } else if (type === 'quadratic') {
+        xMin = -5;
+        xMax = 5;
+        yMin = -10;
+        yMax = 10;
+      } else if (type === 'exponential') {
+        xMin = -2;
+        xMax = 4;
+        yMin = -1;
+        yMax = 10;
+      } else if (type === 'logarithmic') {
+        xMin = 0.1;
+        xMax = 10;
+        yMin = -3;
+        yMax = 3;
+      } else if (type === 'trigonometric') {
+        xMin = -2 * Math.PI;
+        xMax = 2 * Math.PI;
+        yMin = -3;
+        yMax = 3;
+      } else if (type === 'absolute') {
+        xMin = -5;
+        xMax = 5;
+        yMin = -1;
+        yMax = 5;
+      }
+      
+      updateView();
+    }
+
+    function updateView() {
+      // Actualizar los valores de los inputs
+      document.getElementById('xMin').value = Math.round(xMin * 100) / 100;
+      document.getElementById('xMax').value = Math.round(xMax * 100) / 100;
+      document.getElementById('yMin').value = Math.round(yMin * 100) / 100;
+      document.getElementById('yMax').value = Math.round(yMax * 100) / 100;
+      
+      // Calcular nivel de zoom aproximado
+      const originalRange = 20;
+      const currentRange = xMax - xMin;
+      zoomLevel = originalRange / currentRange;
+      
+      // Actualizar información de zoom
+      document.getElementById('zoomLevelInfo').textContent = `Zoom: ${Math.round(zoomLevel * 100)}%`;
+      
+      // Redibujar
+      plotFunction();
+    }
+
+    // Inicializar la aplicación
+    function init() {
+      initCanvas();
+      updateControls();
+      
+      // Ajustar el canvas cuando cambia el tamaño de la ventana
+      window.addEventListener('resize', initCanvas);
+      
+      // Event listeners
+      document.getElementById('functionType').addEventListener('change', updateControls);
+      document.getElementById('plotBtn').addEventListener('click', plotFunction);
+      document.getElementById('resetBtn').addEventListener('click', function() {
+        resetView();
+        updateControls();
+      });
+      document.getElementById('resetViewBtn').addEventListener('click', resetView);
+      document.getElementById('autoViewBtn').addEventListener('click', autoAdjustView);
+      
+      document.getElementById('zoomInBtn').addEventListener('click', zoomIn);
+      document.getElementById('zoomOutBtn').addEventListener('click', zoomOut);
+      document.getElementById('panLeftBtn').addEventListener('click', panLeft);
+      document.getElementById('panRightBtn').addEventListener('click', panRight);
+      document.getElementById('panUpBtn').addEventListener('click', panUp);
+      document.getElementById('panDownBtn').addEventListener('click', panDown);
+      
+      // Event listeners para los inputs de rango
+      document.getElementById('xMin').addEventListener('change', function() {
+        xMin = parseFloat(this.value);
+        plotFunction();
+      });
+      
+      document.getElementById('xMax').addEventListener('change', function() {
+        xMax = parseFloat(this.value);
+        plotFunction();
+      });
+      
+      document.getElementById('yMin').addEventListener('change', function() {
+        yMin = parseFloat(this.value);
+        plotFunction();
+      });
+      
+      document.getElementById('yMax').addEventListener('change', function() {
+        yMax = parseFloat(this.value);
+        plotFunction();
+      });
+      
+      // Dibujar la cuadrícula inicial
+      drawGrid();
+    }
+
+    // Iniciar cuando el documento esté cargado
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>

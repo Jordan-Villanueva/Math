@@ -7,8 +7,8 @@ const authMessage = document.getElementById("authMessage");
 
 // ===== Auth0 Config =====
 const AUTH0_DOMAIN = "dev-bjoqtux6wua5w2l2.us.auth0.com";
-const AUTH0_CLIENT_ID = "v3UBpSzoahGQXztbbEPL5jiaNXIdfLH7";
-const REDIRECT_URI = "https://chemisnice.netlify.app";
+const AUTH0_CLIENT_ID = "yxhjQEyDy0tTWITcCd0NU0lHeXW1T7rz";
+const REDIRECT_URI = "https://veredis-math-app.netlify.app";
 
 // Lista de usuarios revocados
 const REVOKED_USERS = ["revokeduser1@example.com", "revokeduser2@example.com"];
