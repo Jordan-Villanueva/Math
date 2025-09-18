@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Desigualdades Matemáticas - Teoría y Gráficas</title>
   <style>
     :root { 
@@ -13,7 +13,11 @@
       --light-accent: rgba(43, 122, 120, 0.1);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
 
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -23,11 +27,17 @@
       line-height: 1.6;
       color: #333;
       background: linear-gradient(#f7fbfb, #eef6f6);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
 
     .container {
-      max-width: 1200px;
+      width: 100%;
       margin: 0 auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
 
     header {
@@ -38,6 +48,7 @@
       color: white;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 100%;
     }
 
     h1 {
@@ -69,6 +80,7 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       margin-bottom: 25px;
       transition: transform 0.3s ease;
+      width: 100%;
     }
 
     .panel:hover {
@@ -79,6 +91,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
+      width: 100%;
     }
 
     .element-info {
@@ -124,6 +137,8 @@
       cursor: pointer;
       font-size: 1rem;
       transition: background 0.3s;
+      width: 100%;
+      margin-bottom: 10px;
     }
 
     .btn:hover { 
@@ -144,12 +159,15 @@
       flex-wrap: wrap;
       gap: 15px;
       margin: 15px 0;
+      width: 100%;
     }
 
     .control-group {
       display: flex;
       flex-direction: column;
       gap: 8px;
+      flex: 1;
+      min-width: 120px;
     }
 
     .control-group label {
@@ -181,6 +199,7 @@
       align-items: center;
       margin-top: 15px;
       flex-wrap: wrap;
+      width: 100%;
     }
     
     .zoom-btn {
@@ -190,6 +209,8 @@
       background: white;
       cursor: pointer;
       font-weight: bold;
+      flex: 1;
+      min-width: 60px;
     }
     
     .zoom-btn:hover {
@@ -200,6 +221,8 @@
       font-size: 0.9rem;
       color: var(--muted);
       margin-left: 10px;
+      flex: 2;
+      text-align: center;
     }
 
     .output {
@@ -212,6 +235,19 @@
       font-size: 1.1rem;
       line-height: 1.8;
       border-left: 5px solid var(--accent);
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+
+    .button-group .btn {
+      width: auto;
+      flex: 1;
     }
 
     @media (max-width: 900px) {
@@ -238,6 +274,32 @@
       .zoom-controls {
         flex-direction: column;
         align-items: flex-start;
+      }
+      
+      .zoom-controls .zoom-btn {
+        width: 100%;
+      }
+      
+      .graph-controls {
+        flex-direction: column;
+      }
+      
+      .button-group {
+        flex-direction: column;
+      }
+    }
+
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      
+      header {
+        padding: 15px;
+      }
+      
+      .animation-container {
+        margin: 10px 0;
       }
     }
   </style>
@@ -281,8 +343,10 @@
           </select>
         </div>
         
-        <button class="btn" id="plotBtn">Graficar Desigualdad</button>
-        <button class="btn mutebtn" id="resetBtn">Reiniciar</button>
+        <div class="button-group">
+          <button class="btn" id="plotBtn">Graficar Desigualdad</button>
+          <button class="btn mutebtn" id="resetBtn">Reiniciar</button>
+        </div>
         
         <div class="output" id="solutionOutput">
           La solución aparecerá aquí después de graficar.
@@ -338,13 +402,28 @@
     let panX = 0;
     let panY = 0;
     let xMin = -10, xMax = 10, yMin = -10, yMax = 10;
+    let resizeTimeout;
 
     // Inicializar el tamaño del canvas
     function initCanvas() {
       const container = canvas.parentElement;
-      canvas.width = container.clientWidth;
+      const containerWidth = container.clientWidth;
+      
+      // Ajustar el tamaño del canvas con valores enteros para evitar problemas de renderizado
+      canvas.width = Math.floor(containerWidth);
       canvas.height = 400;
+      
+      // Forzar redibujado
       drawGrid();
+    }
+
+    // Optimizar el manejo de redimensionamiento
+    function handleResize() {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        initCanvas();
+        plotInequality();
+      }, 250);
     }
 
     // Dibujar la cuadrícula y ejes
@@ -448,6 +527,11 @@
 
     // Dibujar función y área de solución
     function plotInequality() {
+      // Verificar si el canvas tiene dimensiones válidas
+      if (canvas.width <= 0 || canvas.height <= 0) {
+        initCanvas();
+      }
+      
       drawGrid();
       
       const type = document.getElementById('inequalityType').value;
@@ -505,106 +589,106 @@
           plotRationalInequality(a, b, c, d, sign, xScale, yScale, xOffset, yOffset);
           break;
          case 'trigonometric':
-	    const funcType = document.getElementById('trigFunction').value;
-	    const amplitude = parseFloat(document.getElementById('trigAmplitude').value) || 1;
-	    const constant = parseFloat(document.getElementById('trigConstant').value) || 0;
-	    plotTrigonometricInequality(funcType, amplitude, constant, sign, xScale, yScale, xOffset, yOffset);
-	    break;
+          const funcType = document.getElementById('trigFunction').value;
+          const amplitude = parseFloat(document.getElementById('trigAmplitude').value) || 1;
+          const constant = parseFloat(document.getElementById('trigConstant').value) || 0;
+          plotTrigonometricInequality(funcType, amplitude, constant, sign, xScale, yScale, xOffset, yOffset);
+          break;
       }
     }
 
    function plotLinear2DInequality(a, b, c, sign, xScale, yScale, xOffset, yOffset) {
-  const width = canvas.width;
-  const height = canvas.height;
+      const width = canvas.width;
+      const height = canvas.height;
 
-  // 1. Dibujar la cuadrícula
-  drawGrid();
-  
-  // 2. Dibujar la línea
-  ctx.strokeStyle = '#2b7a78';
-  ctx.lineWidth = 3;
-
-  // Determinar si la línea es punteada o sólida
-  if (sign === '<' || sign === '>') {
-    ctx.setLineDash([10, 5]); // punteada
-  } else {
-    ctx.setLineDash([]); // sólida
-  }
-
-  // Calcular puntos para la línea
-  if (b !== 0) {
-    // Para líneas no verticales: y = (c - a*x)/b
-    const x1Canvas = 0;
-    const x1World = xMin + x1Canvas / xScale;
-    const y1World = (c - a * x1World) / b;
-    const y1Canvas = height - (y1World - yMin) * yScale;
-
-    const x2Canvas = width;
-    const x2World = xMin + x2Canvas / xScale;
-    const y2World = (c - a * x2World) / b;
-    const y2Canvas = height - (y2World - yMin) * yScale;
-
-    ctx.beginPath();
-    ctx.moveTo(x1Canvas, y1Canvas);
-    ctx.lineTo(x2Canvas, y2Canvas);
-    ctx.stroke();
-  } else {
-    // Para líneas verticales: x = c/a
-    const xWorld = c / a;
-    const xCanvas = (xWorld - xMin) * xScale;
-    ctx.beginPath();
-    ctx.moveTo(xCanvas, 0);
-    ctx.lineTo(xCanvas, height);
-    ctx.stroke();
-  }
-
-  // Restaurar línea sólida
-  ctx.setLineDash([]);
-
-  // 3. LÓGICA CORREGIDA: Determinar qué lado sombrear basado en el signo
-  // sin depender de un punto de prueba variable
-  
-  // 4. Crear imagen para el sombreado
-  const imageData = ctx.getImageData(0, 0, width, height);
-  const data = imageData.data;
-  
-  // Evaluar cada píxel para el sombreado
-  for (let y = 0; y < height; y++) {
-    for (let x = 0; x < width; x++) {
-      // Convertir a coordenadas mundo
-      const worldX = xMin + x / xScale;
-      const worldY = yMin + (height - y) / yScale;
+      // 1. Dibujar la cuadrícula
+      drawGrid();
       
-      // Evaluar desigualdad
-      const value = a * worldX + b * worldY;
+      // 2. Dibujar la línea
+      ctx.strokeStyle = '#2b7a78';
+      ctx.lineWidth = 3;
+
+      // Determinar si la línea es punteada o sólida
+      if (sign === '<' || sign === '>') {
+        ctx.setLineDash([10, 5]); // punteada
+      } else {
+        ctx.setLineDash([]); // sólida
+      }
+
+      // Calcular puntos para la línea
+      if (b !== 0) {
+        // Para líneas no verticales: y = (c - a*x)/b
+        const x1Canvas = 0;
+        const x1World = xMin + x1Canvas / xScale;
+        const y1World = (c - a * x1World) / b;
+        const y1Canvas = height - (y1World - yMin) * yScale;
+
+        const x2Canvas = width;
+        const x2World = xMin + x2Canvas / xScale;
+        const y2World = (c - a * x2World) / b;
+        const y2Canvas = height - (y2World - yMin) * yScale;
+
+        ctx.beginPath();
+        ctx.moveTo(x1Canvas, y1Canvas);
+        ctx.lineTo(x2Canvas, y2Canvas);
+        ctx.stroke();
+      } else {
+        // Para líneas verticales: x = c/a
+        const xWorld = c / a;
+        const xCanvas = (xWorld - xMin) * xScale;
+        ctx.beginPath();
+        ctx.moveTo(xCanvas, 0);
+        ctx.lineTo(xCanvas, height);
+        ctx.stroke();
+      }
+
+      // Restaurar línea sólida
+      ctx.setLineDash([]);
+
+      // 3. LÓGICA CORREGIDA: Determinar qué lado sombrear basado en el signo
+      // sin depender de un punto de prueba variable
       
-      // Determinar si este punto satisface la desigualdad
-      let satisfies = false;
-      switch(sign) {
-        case '<':  satisfies = value < c; break;
-        case '<=': satisfies = value <= c; break;
-        case '>':  satisfies = value > c; break;
-        case '>=': satisfies = value >= c; break;
+      // 4. Crear imagen para el sombreado
+      const imageData = ctx.getImageData(0, 0, width, height);
+      const data = imageData.data;
+      
+      // Evaluar cada píxel para el sombreado
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          // Convertir a coordenadas mundo
+          const worldX = xMin + x / xScale;
+          const worldY = yMin + (height - y) / yScale;
+          
+          // Evaluar desigualdad
+          const value = a * worldX + b * worldY;
+          
+          // Determinar si este punto satisface la desigualdad
+          let satisfies = false;
+          switch(sign) {
+            case '<':  satisfies = value < c; break;
+            case '<=': satisfies = value <= c; break;
+            case '>':  satisfies = value > c; break;
+            case '>=': satisfies = value >= c; break;
+          }
+          
+          // Si satisface la condición, añadir sombreado
+          if (satisfies) {
+            const index = (y * width + x) * 4;
+            // Mezclar el color de sombreado con el color existente
+            data[index] = Math.floor(data[index] * 0.7 + 43 * 0.3);     // R
+            data[index + 1] = Math.floor(data[index + 1] * 0.7 + 122 * 0.3); // G
+            data[index + 2] = Math.floor(data[index + 2] * 0.7 + 120 * 0.3); // B
+          }
+        }
       }
       
-      // Si satisface la condición, añadir sombreado
-      if (satisfies) {
-        const index = (y * width + x) * 4;
-        // Mezclar el color de sombreado con el color existente
-        data[index] = Math.floor(data[index] * 0.7 + 43 * 0.3);     // R
-        data[index + 1] = Math.floor(data[index + 1] * 0.7 + 122 * 0.3); // G
-        data[index + 2] = Math.floor(data[index + 2] * 0.7 + 120 * 0.3); // B
-      }
+      // Dibujar el sombreado
+      ctx.putImageData(imageData, 0, 0);
+
+      // Mostrar solución
+      document.getElementById('solutionOutput').textContent =
+        `Desigualdad: ${a}x ${b >= 0 ? '+' : ''}${b}y ${sign} ${c}\nLa región sombreada representa todas las soluciones (x,y) que satisfacen la desigualdad.`;
     }
-  }
-  
-  // Dibujar el sombreado
-  ctx.putImageData(imageData, 0, 0);
-
-  // Mostrar solución
-  document.getElementById('solutionOutput').textContent =
-    `Desigualdad: ${a}x ${b >= 0 ? '+' : ''}${b}y ${sign} ${c}\nLa región sombreada representa todas las soluciones (x,y) que satisfacen la desigualdad.`;
-}
 
     // Dibujar desigualdad cuadrática 2D (y ▢ ax² + bx + c)
     function plotQuadratic2DInequality(a, b, c, sign, xScale, yScale, xOffset, yOffset) {
@@ -702,95 +786,95 @@
       document.getElementById('solutionOutput').textContent = solutionText;
     }
 
-	// Dibujar desigualdad lineal 1D (ax + b ▢ c)
-	function plotLinear1DInequality(a, b, c, sign, xScale, yScale, xOffset, yOffset) {
-	  const width = canvas.width;
-	  const height = canvas.height;
-	  
-	  // Calcular el valor de x que satisface ax + b = c
-	  const solutionX = (c - b) / a;
-	  const pixelX = solutionX * xScale + xOffset;
-	  
-	  // Dibujar la línea con estilo diferente según la desigualdad
-	  ctx.strokeStyle = '#2b7a78';
-	  ctx.lineWidth = 3;
-	  
-	  // Línea continua para <= o >=, punteada para < o >
-	  if (sign === '<=' || sign === '>=') {
-	    ctx.setLineDash([]); // Línea sólida
-	  } else {
-	    ctx.setLineDash([5, 5]); // Línea punteada
-	  }
-	  
-	  ctx.beginPath();
-	  ctx.moveTo(pixelX, 0);
-	  ctx.lineTo(pixelX, height);
-	  ctx.stroke();
-	  ctx.setLineDash([]); // Restaurar línea sólida
-	  
-	  // Dibujar área de solución
-	  ctx.fillStyle = 'rgba(43, 122, 120, 0.3)';
-	  
-	  // Determinar qué lado sombrear según la desigualdad
-	  let solutionRegion;
-	  
-	  if (a > 0) {
-	    if (sign === '<' || sign === '<=') {
-	      solutionRegion = { start: 0, end: pixelX };
-	    } else {
-	      solutionRegion = { start: pixelX, end: width };
-	    }
-	  } else {
-	    if (sign === '<' || sign === '<=') {
-	      solutionRegion = { start: pixelX, end: width };
-	    } else {
-	      solutionRegion = { start: 0, end: pixelX };
-	    }
-	  }
-	  
-	  // Dibujar la región solución
-	  ctx.beginPath();
-	  ctx.rect(solutionRegion.start, 0, solutionRegion.end - solutionRegion.start, height);
-	  ctx.fill();
-	  
-	  // Dibujar un punto en el valor crítico para <= o >=
-	  if (sign === '<=' || sign === '>=') {
-	    ctx.fillStyle = '#2b7a78';
-	    ctx.beginPath();
-	    ctx.arc(pixelX, height / 2, 5, 0, Math.PI * 2);
-	    ctx.fill();
-	  }
-	  
-	  // Mostrar solución
-	  let solutionText = `Desigualdad: ${a}x ${b >= 0 ? '+' : ''}${b} ${sign} ${c}\n`;
-	  
-	  if (a !== 0) {
-	    if (sign === '<' || sign === '<=') {
-	      solutionText += `x ${sign} ${solutionX.toFixed(2)}`;
-	    } else {
-	      solutionText += `x ${sign} ${solutionX.toFixed(2)}`;
-	    }
-	    
-	    // Añadir representación de intervalo
-	    if (a > 0) {
-	      if (sign === '<' || sign === '<=') {
-		solutionText += `\nEn notación de intervalo: (-∞, ${solutionX.toFixed(2)}${sign === '<=' ? ']' : ')'}`;
-	      } else {
-		solutionText += `\nEn notación de intervalo: (${solutionX.toFixed(2)}, ∞)`;
-	      }
-	    } else {
-	      if (sign === '<' || sign === '<=') {
-		solutionText += `\nEn notación de intervalo: (${solutionX.toFixed(2)}, ∞)`;
-	      } else {
-		solutionText += `\nEn notación de intervalo: (-∞, ${solutionX.toFixed(2)}${sign === '>=' ? ']' : ')'}`;
-	      }
-	    }
-	  } else {
-	    solutionText += (b > c) ? "Siempre verdadero" : "Nunca verdadero";
-	  }
-	  
-	  document.getElementById('solutionOutput').textContent = solutionText;
-	}
+    // Dibujar desigualdad lineal 1D (ax + b ▢ c)
+    function plotLinear1DInequality(a, b, c, sign, xScale, yScale, xOffset, yOffset) {
+      const width = canvas.width;
+      const height = canvas.height;
+      
+      // Calcular el valor de x que satisface ax + b = c
+      const solutionX = (c - b) / a;
+      const pixelX = solutionX * xScale + xOffset;
+      
+      // Dibujar la línea con estilo diferente según la desigualdad
+      ctx.strokeStyle = '#2b7a78';
+      ctx.lineWidth = 3;
+      
+      // Línea continua para <= o >=, punteada para < o >
+      if (sign === '<=' || sign === '>=') {
+        ctx.setLineDash([]); // Línea sólida
+      } else {
+        ctx.setLineDash([5, 5]); // Línea punteada
+      }
+      
+      ctx.beginPath();
+      ctx.moveTo(pixelX, 0);
+      ctx.lineTo(pixelX, height);
+      ctx.stroke();
+      ctx.setLineDash([]); // Restaurar línea sólida
+      
+      // Dibujar área de solución
+      ctx.fillStyle = 'rgba(43, 122, 120, 0.3)';
+      
+      // Determinar qué lado sombrear según la desigualdad
+      let solutionRegion;
+      
+      if (a > 0) {
+        if (sign === '<' || sign === '<=') {
+          solutionRegion = { start: 0, end: pixelX };
+        } else {
+          solutionRegion = { start: pixelX, end: width };
+        }
+      } else {
+        if (sign === '<' || sign === '<=') {
+          solutionRegion = { start: pixelX, end: width };
+        } else {
+          solutionRegion = { start: 0, end: pixelX };
+        }
+      }
+      
+      // Dibujar la región solución
+      ctx.beginPath();
+      ctx.rect(solutionRegion.start, 0, solutionRegion.end - solutionRegion.start, height);
+      ctx.fill();
+      
+      // Dibujar un punto en el valor crítico para <= o >=
+      if (sign === '<=' || sign === '>=') {
+        ctx.fillStyle = '#2b7a78';
+        ctx.beginPath();
+        ctx.arc(pixelX, height / 2, 5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      
+      // Mostrar solución
+      let solutionText = `Desigualdad: ${a}x ${b >= 0 ? '+' : ''}${b} ${sign} ${c}\n`;
+      
+      if (a !== 0) {
+        if (sign === '<' || sign === '<=') {
+          solutionText += `x ${sign} ${solutionX.toFixed(2)}`;
+        } else {
+          solutionText += `x ${sign} ${solutionX.toFixed(2)}`;
+        }
+        
+        // Añadir representación de intervalo
+        if (a > 0) {
+          if (sign === '<' || sign === '<=') {
+            solutionText += `\nEn notación de intervalo: (-∞, ${solutionX.toFixed(2)}${sign === '<=' ? ']' : ')'}`;
+          } else {
+            solutionText += `\nEn notación de intervalo: (${solutionX.toFixed(2)}, ∞)`;
+          }
+        } else {
+          if (sign === '<' || sign === '<=') {
+            solutionText += `\nEn notación de intervalo: (${solutionX.toFixed(2)}, ∞)`;
+          } else {
+            solutionText += `\nEn notación de intervalo: (-∞, ${solutionX.toFixed(2)}${sign === '>=' ? ']' : ')'}`;
+          }
+        }
+      } else {
+        solutionText += (b > c) ? "Siempre verdadero" : "Nunca verdadero";
+      }
+      
+      document.getElementById('solutionOutput').textContent = solutionText;
+    }
 
     // Dibujar desigualdad cuadrática 1D (ax² + bx + c ▢ 0)
     function plotQuadratic1DInequality(a, b, c, sign, xScale, yScale, xOffset, yOffset) {
@@ -1117,125 +1201,125 @@
     }
     
     function plotTrigonometricInequality(funcType, amplitude, constant, sign, xScale, yScale, xOffset, yOffset) {
-	  const width = canvas.width;
-	  const height = canvas.height;
-	  
-	  // Dibujar la función trigonométrica
-	  ctx.strokeStyle = '#2b7a78';
-	  ctx.lineWidth = 3;
-	  ctx.beginPath();
-	  
-	  let firstPoint = true;
-	  for (let pixelX = 0; pixelX <= width; pixelX++) {
-	    const x = (pixelX - xOffset) / xScale;
-	    let y;
-	    
-	    switch(funcType) {
-	      case 'sin':
-		y = amplitude * Math.sin(x) + constant;
-		break;
-	      case 'cos':
-		y = amplitude * Math.cos(x) + constant;
-		break;
-	      case 'sin2':
-		y = amplitude * Math.sin(2 * x) + constant;
-		break;
-	      case 'cos2':
-		y = amplitude * Math.cos(2 * x) + constant;
-		break;
-	      case 'sin05':
-		y = amplitude * Math.sin(0.5 * x) + constant;
-		break;
-	      case 'cos05':
-		y = amplitude * Math.cos(0.5 * x) + constant;
-		break;
-	      default:
-		y = amplitude * Math.sin(x) + constant;
-	    }
-	    
-	    const pixelY = yOffset - y * yScale;
-	    
-	    if (pixelY >= 0 && pixelY <= height) {
-	      if (firstPoint) {
-		ctx.moveTo(pixelX, pixelY);
-		firstPoint = false;
-	      } else {
-		ctx.lineTo(pixelX, pixelY);
-	      }
-	    } else {
-	      firstPoint = true;
-	    }
-	  }
-	  ctx.stroke();
-	  
-	  // Dibujar área de solución
-	  const imageData = ctx.getImageData(0, 0, width, height);
-	  const data = imageData.data;
-	  
-	  // Evaluar cada píxel para el sombreado
-	  for (let y = 0; y < height; y++) {
-	    for (let x = 0; x < width; x++) {
-	      const worldX = xMin + x / xScale;
-	      const worldY = yMin + (height - y) / yScale;
-	      
-	      let trigValue;
-	      switch(funcType) {
-		case 'sin':
-		  trigValue = amplitude * Math.sin(worldX) + constant;
-		  break;
-		case 'cos':
-		  trigValue = amplitude * Math.cos(worldX) + constant;
-		  break;
-		case 'sin2':
-		  trigValue = amplitude * Math.sin(2 * worldX) + constant;
-		  break;
-		case 'cos2':
-		  trigValue = amplitude * Math.cos(2 * worldX) + constant;
-		  break;
-		case 'sin05':
-		  trigValue = amplitude * Math.sin(0.5 * worldX) + constant;
-		  break;
-		case 'cos05':
-		  trigValue = amplitude * Math.cos(0.5 * worldX) + constant;
-		  break;
-		default:
-		  trigValue = amplitude * Math.sin(worldX) + constant;
-	      }
-	      
-	      let satisfies = false;
-	      switch(sign) {
-		case '<': satisfies = worldY < trigValue; break;
-		case '<=': satisfies = worldY <= trigValue; break;
-		case '>': satisfies = worldY > trigValue; break;
-		case '>=': satisfies = worldY >= trigValue; break;
-	      }
-	      
-	      if (satisfies) {
-		const index = (y * width + x) * 4;
-		data[index] = Math.floor(data[index] * 0.7 + 43 * 0.3);
-		data[index + 1] = Math.floor(data[index + 1] * 0.7 + 122 * 0.3);
-		data[index + 2] = Math.floor(data[index + 2] * 0.7 + 120 * 0.3);
-	      }
-	    }
-	  }
-	  
-	  ctx.putImageData(imageData, 0, 0);
-	  
-	  // Mostrar solución
-	  let functionText;
-	  switch(funcType) {
-	    case 'sin': functionText = `sin(x)`; break;
-	    case 'cos': functionText = `cos(x)`; break;
-	    case 'sin2': functionText = `sin(2x)`; break;
-	    case 'cos2': functionText = `cos(2x)`; break;
-	    case 'sin05': functionText = `sin(0.5x)`; break;
-	    case 'cos05': functionText = `cos(0.5x)`; break;
-	  }
-	  
-	  document.getElementById('solutionOutput').textContent =
-	    `Desigualdad: y ${sign} ${amplitude}${functionText} ${constant >= 0 ? '+' : ''}${constant}\n` +
-	    `La región sombreada representa todas las soluciones (x,y) que satisfacen la desigualdad.`;
-	}
+      const width = canvas.width;
+      const height = canvas.height;
+      
+      // Dibujar la función trigonométrica
+      ctx.strokeStyle = '#2b7a78';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      
+      let firstPoint = true;
+      for (let pixelX = 0; pixelX <= width; pixelX++) {
+        const x = (pixelX - xOffset) / xScale;
+        let y;
+        
+        switch(funcType) {
+          case 'sin':
+            y = amplitude * Math.sin(x) + constant;
+            break;
+          case 'cos':
+            y = amplitude * Math.cos(x) + constant;
+            break;
+          case 'sin2':
+            y = amplitude * Math.sin(2 * x) + constant;
+            break;
+          case 'cos2':
+            y = amplitude * Math.cos(2 * x) + constant;
+            break;
+          case 'sin05':
+            y = amplitude * Math.sin(0.5 * x) + constant;
+            break;
+          case 'cos05':
+            y = amplitude * Math.cos(0.5 * x) + constant;
+            break;
+          default:
+            y = amplitude * Math.sin(x) + constant;
+        }
+        
+        const pixelY = yOffset - y * yScale;
+        
+        if (pixelY >= 0 && pixelY <= height) {
+          if (firstPoint) {
+            ctx.moveTo(pixelX, pixelY);
+            firstPoint = false;
+          } else {
+            ctx.lineTo(pixelX, pixelY);
+          }
+        } else {
+          firstPoint = true;
+        }
+      }
+      ctx.stroke();
+      
+      // Dibujar área de solución
+      const imageData = ctx.getImageData(0, 0, width, height);
+      const data = imageData.data;
+      
+      // Evaluar cada píxel para el sombreado
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const worldX = xMin + x / xScale;
+          const worldY = yMin + (height - y) / yScale;
+          
+          let trigValue;
+          switch(funcType) {
+            case 'sin':
+              trigValue = amplitude * Math.sin(worldX) + constant;
+              break;
+            case 'cos':
+              trigValue = amplitude * Math.cos(worldX) + constant;
+              break;
+            case 'sin2':
+              trigValue = amplitude * Math.sin(2 * worldX) + constant;
+              break;
+            case 'cos2':
+              trigValue = amplitude * Math.cos(2 * worldX) + constant;
+              break;
+            case 'sin05':
+              trigValue = amplitude * Math.sin(0.5 * worldX) + constant;
+              break;
+            case 'cos05':
+              trigValue = amplitude * Math.cos(0.5 * worldX) + constant;
+              break;
+            default:
+              trigValue = amplitude * Math.sin(worldX) + constant;
+          }
+          
+          let satisfies = false;
+          switch(sign) {
+            case '<': satisfies = worldY < trigValue; break;
+            case '<=': satisfies = worldY <= trigValue; break;
+            case '>': satisfies = worldY > trigValue; break;
+            case '>=': satisfies = worldY >= trigValue; break;
+          }
+          
+          if (satisfies) {
+            const index = (y * width + x) * 4;
+            data[index] = Math.floor(data[index] * 0.7 + 43 * 0.3);
+            data[index + 1] = Math.floor(data[index + 1] * 0.7 + 122 * 0.3);
+            data[index + 2] = Math.floor(data[index + 2] * 0.7 + 120 * 0.3);
+          }
+        }
+      }
+      
+      ctx.putImageData(imageData, 0, 0);
+      
+      // Mostrar solución
+      let functionText;
+      switch(funcType) {
+        case 'sin': functionText = `sin(x)`; break;
+        case 'cos': functionText = `cos(x)`; break;
+        case 'sin2': functionText = `sin(2x)`; break;
+        case 'cos2': functionText = `cos(2x)`; break;
+        case 'sin05': functionText = `sin(0.5x)`; break;
+        case 'cos05': functionText = `cos(0.5x)`; break;
+      }
+      
+      document.getElementById('solutionOutput').textContent =
+        `Desigualdad: y ${sign} ${amplitude}${functionText} ${constant >= 0 ? '+' : ''}${constant}\n` +
+        `La región sombreada representa todas las soluciones (x,y) que satisfacen la desigualdad.`;
+    }
 
     // Actualizar controles según el tipo de desigualdad
     function updateControls() {
@@ -1346,28 +1430,28 @@
           `;
           break;
         case 'trigonometric':
-	  controlsHTML = `
-	    <div class="control-group">
-	      <label for="trigFunction">Función:</label>
-	      <select id="trigFunction">
-		<option value="sin">sin(x)</option>
-		<option value="cos">cos(x)</option>
-		<option value="sin2">sin(2x)</option>
-		<option value="cos2">cos(2x)</option>
-		<option value="sin05">sin(0.5x)</option>
-		<option value="cos05">cos(0.5x)</option>
-	      </select>
-	    </div>
-	    <div class="control-group">
-	      <label for="trigAmplitude">Amplitud:</label>
-	      <input type="number" id="trigAmplitude" value="1" step="0.1">
-	    </div>
-	    <div class="control-group">
-	      <label for="trigConstant">Constante:</label>
-	      <input type="number" id="trigConstant" value="0" step="0.1">
-	    </div>
-	  `;
-	  break;
+          controlsHTML = `
+            <div class="control-group">
+              <label for="trigFunction">Función:</label>
+              <select id="trigFunction">
+                <option value="sin">sin(x)</option>
+                <option value="cos">cos(x)</option>
+                <option value="sin2">sin(2x)</option>
+                <option value="cos2">cos(2x)</option>
+                <option value="sin05">sin(0.5x)</option>
+                <option value="cos05">cos(0.5x)</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label for="trigAmplitude">Amplitud:</label>
+              <input type="number" id="trigAmplitude" value="1" step="0.1">
+            </div>
+            <div class="control-group">
+              <label for="trigConstant">Constante:</label>
+              <input type="number" id="trigConstant" value="0" step="0.1">
+            </div>
+          `;
+          break;
       }
       
       controlsContainer.innerHTML = controlsHTML;
@@ -1463,7 +1547,7 @@
       updateControls();
       
       // Ajustar el canvas cuando cambia el tamaño de la ventana
-      window.addEventListener('resize', initCanvas);
+      window.addEventListener('resize', handleResize);
       
       // Event listeners
       document.getElementById('inequalityType').addEventListener('change', updateControls);
@@ -1504,6 +1588,12 @@
       
       // Dibujar la cuadrícula inicial
       drawGrid();
+      
+      // Forzar un redibujado después de la carga completa
+      setTimeout(() => {
+        initCanvas();
+        drawGrid();
+      }, 100);
     }
 
     // Iniciar cuando el documento esté cargado
