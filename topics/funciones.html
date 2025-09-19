@@ -410,551 +410,430 @@
     </div>
   </div>
 
-  <script>
-    // Variables globales
-    const canvas = document.getElementById('graphCanvas');
-    const ctx = canvas.getContext('2d');
-    let zoomLevel = 1;
-    let xMin = -10, xMax = 10, yMin = -10, yMax = 10;
+	  <script>
+	/* ---------- Variables globales ---------- */
+	const canvas = document.getElementById('graphCanvas');
+	const ctx = canvas.getContext('2d');
+	let zoomLevel = 1;
+	let xMin = -10, xMax = 10, yMin = -10, yMax = 10;
 
-    // Inicializar el tamaño del canvas
-    function initCanvas() {
-      const container = canvas.parentElement;
-      canvas.width = container.clientWidth;
-      canvas.height = 400;
-      drawGrid();
-    }
+	/* ---------- Inicialización del canvas ---------- */
+	function initCanvas() {
+	  const container = canvas.parentElement;
+	  canvas.width = container.clientWidth;
+	  canvas.height = 400;
+	  drawGrid();
+	}
 
-    // Dibujar la cuadrícula y ejes
-    function drawGrid() {
-      const width = canvas.width;
-      const height = canvas.height;
-      
-      // Limpiar el canvas
-      ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = '#fcfefe';
-      ctx.fillRect(0, 0, width, height);
-      
-      // Calcular transformaciones
-      const xScale = width / (xMax - xMin);
-      const yScale = height / (yMax - yMin);
-      
-      const xOffset = -xMin * xScale;
-      const yOffset = yMax * yScale;
-      
-      // Dibujar cuadrícula
-      ctx.strokeStyle = '#e0e0e0';
-      ctx.lineWidth = 1;
-      
-      // Líneas verticales
-      for (let x = Math.ceil(xMin); x <= xMax; x++) {
-        const pixelX = x * xScale + xOffset;
-        ctx.beginPath();
-        ctx.moveTo(pixelX, 0);
-        ctx.lineTo(pixelX, height);
-        ctx.stroke();
-      }
-      
-      // Líneas horizontales
-      for (let y = Math.ceil(yMin); y <= yMax; y++) {
-        const pixelY = yOffset - y * yScale;
-        ctx.beginPath();
-        ctx.moveTo(0, pixelY);
-        ctx.lineTo(width, pixelY);
-        ctx.stroke();
-      }
-      
-      // Dibujar ejes
-      ctx.strokeStyle = '#333';
-      ctx.lineWidth = 2;
-      
-      // Eje X
-      const xAxisY = yOffset;
-      if (xAxisY >= 0 && xAxisY <= height) {
-        ctx.beginPath();
-        ctx.moveTo(0, xAxisY);
-        ctx.lineTo(width, xAxisY);
-        ctx.stroke();
-      }
-      
-      // Eje Y
-      const yAxisX = xOffset;
-      if (yAxisX >= 0 && yAxisX <= width) {
-        ctx.beginPath();
-        ctx.moveTo(yAxisX, 0);
-        ctx.lineTo(yAxisX, height);
-        ctx.stroke();
-      }
-      
-      // Dibujar marcas en los ejes
-      ctx.fillStyle = '#333';
-      ctx.font = '12px Arial';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      
-      // Marcas en el eje X
-      for (let x = Math.ceil(xMin); x <= xMax; x++) {
-        if (x === 0) continue;
-        const pixelX = x * xScale + xOffset;
-        if (pixelX >= 0 && pixelX <= width) {
-          ctx.beginPath();
-          ctx.moveTo(pixelX, xAxisY - 5);
-          ctx.lineTo(pixelX, xAxisY + 5);
-          ctx.stroke();
-          ctx.fillText(x.toString(), pixelX, xAxisY + 15);
-        }
-      }
-      
-      // Marcas en el eje Y
-      for (let y = Math.ceil(yMin); y <= yMax; y++) {
-        if (y === 0) continue;
-        const pixelY = yOffset - y * yScale;
-        if (pixelY >= 0 && pixelY <= height) {
-          ctx.beginPath();
-          ctx.moveTo(yAxisX - 5, pixelY);
-          ctx.lineTo(yAxisX + 5, pixelY);
-          ctx.stroke();
-          ctx.fillText(y.toString(), yAxisX - 15, pixelY);
-        }
-      }
-      
-      // Origen
-      if (xOffset >= 0 && xOffset <= width && xAxisY >= 0 && xAxisY <= height) {
-        ctx.fillText("0", xOffset - 12, xAxisY + 15);
-      }
-    }
+	/* ---------- Dibujar cuadrícula y ejes ---------- */
+	function drawGrid() {
+	  const width = canvas.width;
+	  const height = canvas.height;
+	  ctx.clearRect(0,0,width,height);
+	  ctx.fillStyle = '#fcfefe';
+	  ctx.fillRect(0,0,width,height);
 
-    // Evaluar función según su tipo
-    function evaluateFunction(x, type) {
-      switch(type) {
-        case 'linear':
-          const m = parseFloat(document.getElementById('paramM').value) || 1;
-          const b = parseFloat(document.getElementById('paramB').value) || 0;
-          return m * x + b;
-          
-        case 'quadratic':
-          const a = parseFloat(document.getElementById('paramA').value) || 1;
-          const bq = parseFloat(document.getElementById('paramBq').value) || 0;
-          const c = parseFloat(document.getElementById('paramC').value) || 0;
-          return a * x * x + bq * x + c;
-          
-        case 'exponential':
-          const base = parseFloat(document.getElementById('paramBase').value) || Math.E;
-          return Math.pow(base, x);
-          
-        case 'logarithmic':
-          const logBase = parseFloat(document.getElementById('paramLogBase').value) || Math.E;
-          return Math.log(x) / Math.log(logBase);
-          
-        case 'trigonometric':
-          const trigType = document.getElementById('trigFunction').value;
-          const amplitude = parseFloat(document.getElementById('trigAmplitude').value) || 1;
-          const frequency = parseFloat(document.getElementById('trigFrequency').value) || 1;
-          const phase = parseFloat(document.getElementById('trigPhase').value) || 0;
-          const constant = parseFloat(document.getElementById('trigConstant').value) || 0;
-          
-          switch(trigType) {
-            case 'sin': return amplitude * Math.sin(frequency * x + phase) + constant;
-            case 'cos': return amplitude * Math.cos(frequency * x + phase) + constant;
-            case 'tan': return amplitude * Math.tan(frequency * x + phase) + constant;
-            default: return Math.sin(x);
-          }
-          
-        case 'absolute':
-          return Math.abs(x);
-          
-        default:
-          return x;
-      }
-    }
+	  const xScale = width / (xMax - xMin);
+	  const yScale = height / (yMax - yMin);
+	  const xOffset = -xMin * xScale;
+	  const yOffset = yMax * yScale;
 
-    // Graficar función
-    function plotFunction() {
-      drawGrid();
-      
-      const type = document.getElementById('functionType').value;
-      const width = canvas.width;
-      const height = canvas.height;
-      
-      // Calcular transformaciones
-      const xScale = width / (xMax - xMin);
-      const yScale = height / (yMax - yMin);
-      const xOffset = -xMin * xScale;
-      const yOffset = yMax * yScale;
-      
-      // Dibujar la función
-      ctx.strokeStyle = '#2b7a78';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      
-      let firstPoint = true;
-      for (let pixelX = 0; pixelX <= width; pixelX++) {
-        const x = (pixelX - xOffset) / xScale;
-        
-        try {
-          const y = evaluateFunction(x, type);
-          const pixelY = yOffset - y * yScale;
-          
-          if (isFinite(pixelY) && pixelY >= -1000 && pixelY <= 1000) {
-            if (firstPoint) {
-              ctx.moveTo(pixelX, pixelY);
-              firstPoint = false;
-            } else {
-              ctx.lineTo(pixelX, pixelY);
-            }
-          } else {
-            firstPoint = true;
-          }
-        } catch (e) {
-          firstPoint = true;
-        }
-      }
-      
-      ctx.stroke();
-      
-      // Mostrar información de la función
-      updateFunctionInfo(type);
-    }
+	  // cuadrícula
+	  ctx.strokeStyle = '#e0e0e0';
+	  ctx.lineWidth = 1;
+	  for (let x = Math.ceil(xMin); x <= xMax; x++) {
+	    const px = x * xScale + xOffset;
+	    ctx.beginPath(); ctx.moveTo(px,0); ctx.lineTo(px,height); ctx.stroke();
+	  }
+	  for (let y = Math.ceil(yMin); y <= yMax; y++) {
+	    const py = yOffset - y * yScale;
+	    ctx.beginPath(); ctx.moveTo(0,py); ctx.lineTo(width,py); ctx.stroke();
+	  }
 
-    // Actualizar información de la función
-    function updateFunctionInfo(type) {
-      let functionText = "";
-      let domain = "";
-      let range = "";
-      
-      switch(type) {
-        case 'linear':
-          const m = parseFloat(document.getElementById('paramM').value) || 1;
-          const b = parseFloat(document.getElementById('paramB').value) || 0;
-          functionText = `f(x) = ${m}x ${b >= 0 ? '+' : ''}${b}`;
-          domain = "Todos los números reales (ℝ)";
-          range = "Todos los números reales (ℝ)";
-          break;
-          
-        case 'quadratic':
-          const a = parseFloat(document.getElementById('paramA').value) || 1;
-          const bq = parseFloat(document.getElementById('paramBq').value) || 0;
-          const c = parseFloat(document.getElementById('paramC').value) || 0;
-          functionText = `f(x) = ${a}x² ${bq >= 0 ? '+' : ''}${bq}x ${c >= 0 ? '+' : ''}${c}`;
-          domain = "Todos los números reales (ℝ)";
-          if (a > 0) {
-            const vertexY = c - (bq * bq) / (4 * a);
-            range = `[${vertexY}, ∞)`;
-          } else {
-            const vertexY = c - (bq * bq) / (4 * a);
-            range = `(-∞, ${vertexY}]`;
-          }
-          break;
-          
-        case 'exponential':
-          const base = parseFloat(document.getElementById('paramBase').value) || Math.E;
-          functionText = `f(x) = ${base}ˣ`;
-          domain = "Todos los números reales (ℝ)";
-          range = "(0, ∞)";
-          break;
-          
-        case 'logarithmic':
-          const logBase = parseFloat(document.getElementById('paramLogBase').value) || Math.E;
-          functionText = `f(x) = log${logBase}(x)`;
-          domain = "(0, ∞)";
-          range = "Todos los números reales (ℝ)";
-          break;
-          
-        case 'trigonometric':
-          const trigType = document.getElementById('trigFunction').value;
-          const amplitude = parseFloat(document.getElementById('trigAmplitude').value) || 1;
-          const frequency = parseFloat(document.getElementById('trigFrequency').value) || 1;
-          const phase = parseFloat(document.getElementById('trigPhase').value) || 0;
-          const constant = parseFloat(document.getElementById('trigConstant').value) || 0;
-          
-          functionText = `f(x) = ${amplitude}${trigType}(${frequency}x ${phase >= 0 ? '+' : ''}${phase}) ${constant >= 0 ? '+' : ''}${constant}`;
-          domain = "Todos los números reales (ℝ)";
-          
-          if (trigType === 'sin' || trigType === 'cos') {
-            range = `[${constant - amplitude}, ${constant + amplitude}]`;
-          } else {
-            range = "Todos los números reales (ℝ)";
-          }
-          break;
-          
-        case 'absolute':
-          functionText = "f(x) = |x|";
-          domain = "Todos los números reales (ℝ)";
-          range = "[0, ∞)";
-          break;
-      }
-      
-      document.getElementById('functionOutput').textContent = 
-        `Función: ${functionText}\nDominio: ${domain}\nRango: ${range}`;
-    }
+	  // ejes
+	  ctx.strokeStyle = '#333'; ctx.lineWidth = 2;
+	  const xAxisY = yOffset; if (xAxisY >= 0 && xAxisY <= height) { ctx.beginPath(); ctx.moveTo(0,xAxisY); ctx.lineTo(width,xAxisY); ctx.stroke(); }
+	  const yAxisX = xOffset; if (yAxisX >= 0 && yAxisX <= width)  { ctx.beginPath(); ctx.moveTo(yAxisX,0); ctx.lineTo(yAxisX,height); ctx.stroke(); }
 
-    // Actualizar controles según el tipo de función
-    function updateControls() {
-      const type = document.getElementById('functionType').value;
-      const controlsContainer = document.getElementById('dynamicControls');
-      
-      let controlsHTML = '';
-      
-      switch(type) {
-        case 'linear':
-          controlsHTML = `
-            <div class="control-group">
-              <label for="paramM">Pendiente (m):</label>
-              <input type="number" id="paramM" value="1" step="0.1">
-            </div>
-            <div class="control-group">
-              <label for="paramB">Intercepto (b):</label>
-              <input type="number" id="paramB" value="0" step="0.1">
-            </div>
-          `;
-          break;
-          
-        case 'quadratic':
-          controlsHTML = `
-            <div class="control-group">
-              <label for="paramA">Coeficiente a:</label>
-              <input type="number" id="paramA" value="1" step="0.1">
-            </div>
-            <div class="control-group">
-              <label for="paramBq">Coeficiente b:</label>
-              <input type="number" id="paramBq" value="0" step="0.1">
-            </div>
-            <div class="control-group">
-              <label for="paramC">Coeficiente c:</label>
-              <input type="number" id="paramC" value="0" step="0.1">
-            </div>
-          `;
-          break;
-          
-        case 'exponential':
-          controlsHTML = `
-            <div class="control-group">
-              <label for="paramBase">Base:</label>
-              <input type="number" id="paramBase" value="${Math.E.toFixed(2)}" step="0.1">
-            </div>
-          `;
-          break;
-          
-        case 'logarithmic':
-          controlsHTML = `
-            <div class="control-group">
-              <label for="paramLogBase">Base:</label>
-              <input type="number" id="paramLogBase" value="${Math.E.toFixed(2)}" step="0.1" min="0.1">
-            </div>
-          `;
-          break;
-          
-        case 'trigonometric':
-          controlsHTML = `
-            <div class="control-group">
-              <label for="trigFunction">Función:</label>
-              <select id="trigFunction">
-                <option value="sin">seno</option>
-                <option value="cos">coseno</option>
-                <option value="tan">tangente</option>
-              </select>
-            </div>
-            <div class="control-group">
-              <label for="trigAmplitude">Amplitud:</label>
-              <input type="number" id="trigAmplitude" value="1" step="0.1">
-            </div>
-            <div class="control-group">
-              <label for="trigFrequency">Frecuencia:</label>
-              <input type="number" id="trigFrequency" value="1" step="0.1">
-            </div>
-            <div class="control-group">
-              <label for="trigPhase">Fase:</label>
-              <input type="number" id="trigPhase" value="0" step="0.1">
-            </div>
-            <div class="control-group">
-              <label for="trigConstant">Constante:</label>
-              <input type="number" id="trigConstant" value="0" step="0.1">
-            </div>
-          `;
-          break;
-          
-        case 'absolute':
-          controlsHTML = `<p>f(x) = |x|</p>`;
-          break;
-      }
-      
-      controlsContainer.innerHTML = controlsHTML;
-    }
+	  // marcas y números
+	  ctx.fillStyle = '#333'; ctx.font = '12px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+	  for (let x = Math.ceil(xMin); x <= xMax; x++) {
+	    if (x === 0) continue;
+	    const px = x * xScale + xOffset;
+	    if (px >= 0 && px <= width) { ctx.beginPath(); ctx.moveTo(px, xAxisY-5); ctx.lineTo(px, xAxisY+5); ctx.stroke(); ctx.fillText(x.toString(), px, xAxisY + 15); }
+	  }
+	  for (let y = Math.ceil(yMin); y <= yMax; y++) {
+	    if (y === 0) continue;
+	    const py = yOffset - y * yScale;
+	    if (py >= 0 && py <= height) { ctx.beginPath(); ctx.moveTo(yAxisX-5, py); ctx.lineTo(yAxisX+5, py); ctx.stroke(); ctx.fillText(y.toString(), yAxisX - 15, py); }
+	  }
+	  if (xOffset >= 0 && xOffset <= width && xAxisY >= 0 && xAxisY <= height) ctx.fillText("0", xOffset - 12, xAxisY + 15);
+	}
 
-    // Funciones de zoom y desplazamiento
-    function zoomIn() {
-      const centerX = (xMin + xMax) / 2;
-      const centerY = (yMin + yMax) / 2;
-      const rangeX = (xMax - xMin) * 0.8;
-      const rangeY = (yMax - yMin) * 0.8;
-      
-      xMin = centerX - rangeX / 2;
-      xMax = centerX + rangeX / 2;
-      yMin = centerY - rangeY / 2;
-      yMax = centerY + rangeY / 2;
-      
-      updateView();
-    }
+	/* ---------- Controles dinámicos (añadir inputs según tipo) ---------- */
+	function updateControls() {
+	  const type = document.getElementById('functionType').value;
+	  const c = document.getElementById('dynamicControls');
+	  let html = '';
 
-    function zoomOut() {
-      const centerX = (xMin + xMax) / 2;
-      const centerY = (yMin + yMax) / 2;
-      const rangeX = (xMax - xMin) / 0.8;
-      const rangeY = (yMax - yMin) / 0.8;
-      
-      xMin = centerX - rangeX / 2;
-      xMax = centerX + rangeX / 2;
-      yMin = centerY - rangeY / 2;
-      yMax = centerY + rangeY / 2;
-      
-      updateView();
-    }
+	  switch(type) {
+	    case 'linear':
+	      html = `
+		<div class="control-group"><label for="paramM">Pendiente (m):</label><input type="number" id="paramM" value="1" step="0.1"></div>
+		<div class="control-group"><label for="paramB">Intercepto (b):</label><input type="number" id="paramB" value="0" step="0.1"></div>
+	      `;
+	      break;
 
-    function panLeft() {
-      const rangeX = xMax - xMin;
-      xMin -= rangeX * 0.1;
-      xMax -= rangeX * 0.1;
-      updateView();
-    }
+	    case 'quadratic':
+	      html = `
+		<div class="control-group"><label for="paramA">a:</label><input type="number" id="paramA" value="1" step="0.1"></div>
+		<div class="control-group"><label for="paramBq">b:</label><input type="number" id="paramBq" value="0" step="0.1"></div>
+		<div class="control-group"><label for="paramC">c:</label><input type="number" id="paramC" value="0" step="0.1"></div>
+	      `;
+	      break;
 
-    function panRight() {
-      const rangeX = xMax - xMin;
-      xMin += rangeX * 0.1;
-      xMax += rangeX * 0.1;
-      updateView();
-    }
+	    case 'polynomial':
+	      // grado 3
+	      html = `
+		<div class="control-group"><label for="paramA3">a₃ (x³):</label><input type="number" id="paramA3" value="0" step="0.1"></div>
+		<div class="control-group"><label for="paramA2">a₂ (x²):</label><input type="number" id="paramA2" value="0" step="0.1"></div>
+		<div class="control-group"><label for="paramA1">a₁ (x):</label><input type="number" id="paramA1" value="1" step="0.1"></div>
+		<div class="control-group"><label for="paramA0">a₀ (const):</label><input type="number" id="paramA0" value="0" step="0.1"></div>
+	      `;
+	      break;
 
-    function panUp() {
-      const rangeY = yMax - yMin;
-      yMin += rangeY * 0.1;
-      yMax += rangeY * 0.1;
-      updateView();
-    }
+	    case 'rational':
+	  html = `
+	    <h4>Numerador</h4>
+	    <div class="control-group"><label for="paramRatA3">a₃ (x³):</label><input type="number" id="paramRatA3" value="0" step="0.1"></div>
+	    <div class="control-group"><label for="paramRatA2">a₂ (x²):</label><input type="number" id="paramRatA2" value="0" step="0.1"></div>
+	    <div class="control-group"><label for="paramRatA1">a₁ (x):</label><input type="number" id="paramRatA1" value="1" step="0.1"></div>
+	    <div class="control-group"><label for="paramRatA0">a₀:</label><input type="number" id="paramRatA0" value="0" step="0.1"></div>
 
-    function panDown() {
-      const rangeY = yMax - yMin;
-      yMin -= rangeY * 0.1;
-      yMax -= rangeY * 0.1;
-      updateView();
-    }
+	    <h4>Denominador</h4>
+	    <div class="control-group"><label for="paramRatB3">b₃ (x³):</label><input type="number" id="paramRatB3" value="0" step="0.1"></div>
+	    <div class="control-group"><label for="paramRatB2">b₂ (x²):</label><input type="number" id="paramRatB2" value="0" step="0.1"></div>
+	    <div class="control-group"><label for="paramRatB1">b₁ (x):</label><input type="number" id="paramRatB1" value="1" step="0.1"></div>
+	    <div class="control-group"><label for="paramRatB0">b₀:</label><input type="number" id="paramRatB0" value="0" step="0.1"></div>
+	  `;
+	  break;
 
-    function resetView() {
-      xMin = -10;
-      xMax = 10;
-      yMin = -10;
-      yMax = 10;
-      updateView();
-    }
+	    case 'exponential':
+	      html = `<div class="control-group"><label for="paramBase">Base:</label><input type="number" id="paramBase" value="${Math.E.toFixed(2)}" step="0.1"></div>`;
+	      break;
 
-    function autoAdjustView() {
-      const type = document.getElementById('functionType').value;
-      
-      if (type === 'linear') {
-        xMin = -10;
-        xMax = 10;
-        yMin = -10;
-        yMax = 10;
-      } else if (type === 'quadratic') {
-        xMin = -5;
-        xMax = 5;
-        yMin = -10;
-        yMax = 10;
-      } else if (type === 'exponential') {
-        xMin = -2;
-        xMax = 4;
-        yMin = -1;
-        yMax = 10;
-      } else if (type === 'logarithmic') {
-        xMin = 0.1;
-        xMax = 10;
-        yMin = -3;
-        yMax = 3;
-      } else if (type === 'trigonometric') {
-        xMin = -2 * Math.PI;
-        xMax = 2 * Math.PI;
-        yMin = -3;
-        yMax = 3;
-      } else if (type === 'absolute') {
-        xMin = -5;
-        xMax = 5;
-        yMin = -1;
-        yMax = 5;
-      }
-      
-      updateView();
-    }
+	    case 'logarithmic':
+	      html = `<div class="control-group"><label for="paramLogBase">Base:</label><input type="number" id="paramLogBase" value="${Math.E.toFixed(2)}" step="0.1" min="0.1"></div>`;
+	      break;
 
-    function updateView() {
-      // Actualizar los valores de los inputs
-      document.getElementById('xMin').value = Math.round(xMin * 100) / 100;
-      document.getElementById('xMax').value = Math.round(xMax * 100) / 100;
-      document.getElementById('yMin').value = Math.round(yMin * 100) / 100;
-      document.getElementById('yMax').value = Math.round(yMax * 100) / 100;
-      
-      // Calcular nivel de zoom aproximado
-      const originalRange = 20;
-      const currentRange = xMax - xMin;
-      zoomLevel = originalRange / currentRange;
-      
-      // Actualizar información de zoom
-      document.getElementById('zoomLevelInfo').textContent = `Zoom: ${Math.round(zoomLevel * 100)}%`;
-      
-      // Redibujar
-      plotFunction();
-    }
+	    case 'trigonometric':
+	      html = `
+		<div class="control-group"><label for="trigFunction">Función:</label>
+		  <select id="trigFunction"><option value="sin">seno</option><option value="cos">coseno</option><option value="tan">tangente</option></select></div>
+		<div class="control-group"><label for="trigAmplitude">Amplitud:</label><input type="number" id="trigAmplitude" value="1" step="0.1"></div>
+		<div class="control-group"><label for="trigFrequency">Frecuencia:</label><input type="number" id="trigFrequency" value="1" step="0.1"></div>
+		<div class="control-group"><label for="trigPhase">Fase:</label><input type="number" id="trigPhase" value="0" step="0.1"></div>
+		<div class="control-group"><label for="trigConstant">Constante:</label><input type="number" id="trigConstant" value="0" step="0.1"></div>
+	      `;
+	      break;
 
-    // Inicializar la aplicación
-    function init() {
-      initCanvas();
-      updateControls();
-      
-      // Ajustar el canvas cuando cambia el tamaño de la ventana
-      window.addEventListener('resize', initCanvas);
-      
-      // Event listeners
-      document.getElementById('functionType').addEventListener('change', updateControls);
-      document.getElementById('plotBtn').addEventListener('click', plotFunction);
-      document.getElementById('resetBtn').addEventListener('click', function() {
-        resetView();
-        updateControls();
-      });
-      document.getElementById('resetViewBtn').addEventListener('click', resetView);
-      document.getElementById('autoViewBtn').addEventListener('click', autoAdjustView);
-      
-      document.getElementById('zoomInBtn').addEventListener('click', zoomIn);
-      document.getElementById('zoomOutBtn').addEventListener('click', zoomOut);
-      document.getElementById('panLeftBtn').addEventListener('click', panLeft);
-      document.getElementById('panRightBtn').addEventListener('click', panRight);
-      document.getElementById('panUpBtn').addEventListener('click', panUp);
-      document.getElementById('panDownBtn').addEventListener('click', panDown);
-      
-      // Event listeners para los inputs de rango
-      document.getElementById('xMin').addEventListener('change', function() {
-        xMin = parseFloat(this.value);
-        plotFunction();
-      });
-      
-      document.getElementById('xMax').addEventListener('change', function() {
-        xMax = parseFloat(this.value);
-        plotFunction();
-      });
-      
-      document.getElementById('yMin').addEventListener('change', function() {
-        yMin = parseFloat(this.value);
-        plotFunction();
-      });
-      
-      document.getElementById('yMax').addEventListener('change', function() {
-        yMax = parseFloat(this.value);
-        plotFunction();
-      });
-      
-      // Dibujar la cuadrícula inicial
-      drawGrid();
-    }
+	    case 'absolute':
+	      html = `<div class="control-group"><p>f(x) = |x|</p></div>`;
+	      break;
+	  }
 
-    // Iniciar cuando el documento esté cargado
-    document.addEventListener('DOMContentLoaded', init);
-  </script>
+	  c.innerHTML = html;
+	}
+
+	/* ---------- Evaluador de funciones ---------- */
+	function evaluateFunction(x, type) {
+	  if (!isFinite(x)) return NaN;
+
+	  switch(type) {
+	    case 'linear': {
+	      const m = parseFloat(document.getElementById('paramM')?.value || 1);
+	      const b = parseFloat(document.getElementById('paramB')?.value || 0);
+	      return m * x + b;
+	    }
+	    case 'quadratic': {
+	      const a = parseFloat(document.getElementById('paramA')?.value || 1);
+	      const bq = parseFloat(document.getElementById('paramBq')?.value || 0);
+	      const c = parseFloat(document.getElementById('paramC')?.value || 0);
+	      return a * x * x + bq * x + c;
+	    }
+	    case 'polynomial': {
+	      const a3 = parseFloat(document.getElementById('paramA3')?.value || 0);
+	      const a2 = parseFloat(document.getElementById('paramA2')?.value || 0);
+	      const a1 = parseFloat(document.getElementById('paramA1')?.value || 0);
+	      const a0 = parseFloat(document.getElementById('paramA0')?.value || 0);
+	      return a3 * x*x*x + a2 * x*x + a1 * x + a0;
+	    }
+	    case 'rational': {
+	      const a3 = parseFloat(document.getElementById('paramRatA3')?.value || 0);
+	      const a2 = parseFloat(document.getElementById('paramRatA2')?.value || 0);
+	      const a1 = parseFloat(document.getElementById('paramRatA1')?.value || 0);
+	      const a0 = parseFloat(document.getElementById('paramRatA0')?.value || 0);
+
+	      const b3 = parseFloat(document.getElementById('paramRatB3')?.value || 0);
+	      const b2 = parseFloat(document.getElementById('paramRatB2')?.value || 0);
+	      const b1 = parseFloat(document.getElementById('paramRatB1')?.value || 0);
+	      const b0 = parseFloat(document.getElementById('paramRatB0')?.value || 0);
+
+	      const denom = b3*x**3 + b2*x**2 + b1*x + b0;
+
+	      if (Math.abs(denom) < 1e-8) {
+		return NaN; // tratar como punto de discontinuidad
+	      }
+
+	      return (a3*x**3 + a2*x**2 + a1*x + a0) / denom;
+	    }
+
+	    case 'exponential': {
+	      const base = parseFloat(document.getElementById('paramBase')?.value) || Math.E;
+	      return Math.pow(base, x);
+	    }
+	    case 'logarithmic': {
+	      const logBase = parseFloat(document.getElementById('paramLogBase')?.value) || Math.E;
+	      if (x <= 0) return NaN;
+	      return Math.log(x) / Math.log(logBase);
+	    }
+	    case 'trigonometric': {
+	      const trigType = document.getElementById('trigFunction')?.value || 'sin';
+	      const amplitude = parseFloat(document.getElementById('trigAmplitude')?.value || 1);
+	      const frequency = parseFloat(document.getElementById('trigFrequency')?.value || 1);
+	      const phase = parseFloat(document.getElementById('trigPhase')?.value || 0);
+	      const constant = parseFloat(document.getElementById('trigConstant')?.value || 0);
+	      if (trigType === 'sin') return amplitude * Math.sin(frequency * x + phase) + constant;
+	      if (trigType === 'cos') return amplitude * Math.cos(frequency * x + phase) + constant;
+	      if (trigType === 'tan') return amplitude * Math.tan(frequency * x + phase) + constant;
+	      return Math.sin(x);
+	    }
+	    case 'absolute':
+	      return Math.abs(x);
+	    default:
+	      return x;
+	  }
+	}
+
+	/* ---------- Graficar función (robusta, rompe en discontinuidades) ---------- */
+	function plotFunction() {
+	  drawGrid();
+	  const type = document.getElementById('functionType').value;
+	  const width = canvas.width, height = canvas.height;
+	  const xScale = width / (xMax - xMin);
+	  const yScale = height / (yMax - yMin);
+	  const xOffset = -xMin * xScale;
+	  const yOffset = yMax * yScale;
+
+	  ctx.strokeStyle = '#2b7a78';
+	  ctx.lineWidth = 2;
+	  ctx.beginPath();
+
+	  let penDown = false;
+	  let lastPy = null;
+	  // threshold: si |y| muy grande, se considera discontinuidad
+	  const yThreshold = Math.max( (yMax - yMin) * 5, 1e4 );
+
+	  for (let px = 0; px <= width; px++) {
+	    const x = xMin + px / xScale; // coordenada mundo
+	    const y = evaluateFunction(x, type);
+
+	    if (!isFinite(y) || Math.abs(y) > yThreshold) {
+	      penDown = false;
+	      lastPy = null;
+	      continue;
+	    }
+
+	    const py = yOffset - y * yScale;
+
+	    if (!penDown) {
+	      ctx.moveTo(px, py);
+	      penDown = true;
+	      lastPy = py;
+	    } else {
+	      // si salto vertical enorme entre puntos, romper trazo (evita líneas que cruzan una asíntota)
+	      if (lastPy !== null && Math.abs(py - lastPy) > height * 0.6) {
+		ctx.moveTo(px, py);
+	      } else {
+		ctx.lineTo(px, py);
+	      }
+	      lastPy = py;
+	    }
+	  }
+
+	  ctx.stroke();
+
+	  // mostrar info
+	  updateFunctionInfo(type);
+	}
+
+	/* ---------- Mostrar información de la función ---------- */
+	function updateFunctionInfo(type) {
+	  let text = "", domain = "", range = "";
+	  switch(type) {
+	    case 'linear': {
+	      const m = parseFloat(document.getElementById('paramM')?.value || 1);
+	      const b = parseFloat(document.getElementById('paramB')?.value || 0);
+	      text = `f(x) = ${m}x ${b >= 0 ? '+' : ''}${b}`;
+	      domain = "ℝ"; range = "ℝ";
+	      break;
+	    }
+	    case 'quadratic': {
+	      const a = parseFloat(document.getElementById('paramA')?.value || 1);
+	      const bq = parseFloat(document.getElementById('paramBq')?.value || 0);
+	      const c = parseFloat(document.getElementById('paramC')?.value || 0);
+	      text = `f(x) = ${a}x² ${bq >= 0 ? '+' : ''}${bq}x ${c >= 0 ? '+' : ''}${c}`;
+	      domain = "ℝ";
+	      const vertexY = c - (bq*bq)/(4*a);
+	      range = a > 0 ? `[${vertexY.toFixed(2)}, ∞)` : `(-∞, ${vertexY.toFixed(2)}]`;
+	      break;
+	    }
+	    case 'polynomial': {
+	      const a3 = parseFloat(document.getElementById('paramA3')?.value || 0);
+	      const a2 = parseFloat(document.getElementById('paramA2')?.value || 0);
+	      const a1 = parseFloat(document.getElementById('paramA1')?.value || 1);
+	      const a0 = parseFloat(document.getElementById('paramA0')?.value || 0);
+	      text = `f(x) = ${a3}x³ ${a2 >= 0 ? '+' : ''}${a2}x² ${a1 >= 0 ? '+' : ''}${a1}x ${a0 >= 0 ? '+' : ''}${a0}`;
+	      domain = "ℝ"; range = "ℝ (dependiente de los coeficientes)";
+	      break;
+	    }
+	   case 'rational': {
+	    // Coeficientes del numerador y denominador (lineal)
+	    const a = parseFloat(document.getElementById('paramRatA')?.value || 1);
+	    const b = parseFloat(document.getElementById('paramRatB')?.value || 0);
+	    const c = parseFloat(document.getElementById('paramRatC')?.value || 1);
+	    const d = parseFloat(document.getElementById('paramRatD')?.value || 0);
+
+	    // Representación en texto de la función
+	    text = `f(x) = (${a}x ${b >= 0 ? '+' : ''}${b}) / (${c}x ${d >= 0 ? '+' : ''}${d})`;
+
+	    // Dominio evitando división por cero
+	    domain = `ℝ \\ {x | ${c}x + ${d} = 0}`;
+
+	    // Rango genérico
+	    range = "depende; puede haber asíntotas";
+
+	    // Función evaluadora segura
+	    evaluator = function(x) {
+		const denom = c * x + d;
+		if (Math.abs(denom) < 1e-8) return NaN; // punto de discontinuidad
+		return (a * x + b) / denom;
+	    };
+
+	    break;
+	}
+
+	    // otros tipos...
+	    default:
+	      text = type;
+	      domain = "Ver definición";
+	      range = "Ver definición";
+	  }
+
+	  document.getElementById('functionOutput').textContent = 
+    `Función: ${text}\nDominio: ${domain}\nRango: ${range}`;
+
+	}
+
+	/* ---------- Auto-ajustar vista (heurística para polinomios/racionales) ---------- */
+	function autoAdjustView() {
+	  const type = document.getElementById('functionType').value;
+
+	  if (type === 'polynomial') {
+	    const a3 = Math.abs(parseFloat(document.getElementById('paramA3')?.value || 0));
+	    const a2 = Math.abs(parseFloat(document.getElementById('paramA2')?.value || 0));
+	    const a1 = Math.abs(parseFloat(document.getElementById('paramA1')?.value || 1));
+	    const a0 = Math.abs(parseFloat(document.getElementById('paramA0')?.value || 0));
+	    // heurística: cuanto mayores los coeficientes, más pequeño el rango x
+	    const magnitude = Math.max(a3, a2, a1, a0, 1);
+	    const xr = Math.max(4, 8 / Math.pow(magnitude, 1/3));
+	    xMin = -xr; xMax = xr;
+	    yMin = -xr * 2; yMax = xr * 2;
+	  } else if (type === 'rational') {
+	    const c = parseFloat(document.getElementById('paramRatC')?.value || 1);
+	    const d = parseFloat(document.getElementById('paramRatD')?.value || 0);
+	    // centrar la vista cerca de la posible asíntota vertical x = -d/c
+	    if (Math.abs(c) > 1e-9) {
+	      const asym = -d / c;
+	      xMin = asym - 8; xMax = asym + 8;
+	      yMin = -8; yMax = 8;
+	    } else {
+	      xMin = -10; xMax = 10; yMin = -8; yMax = 8;
+	    }
+	  } else if (type === 'quadratic') {
+	    xMin = -6; xMax = 6; yMin = -10; yMax = 10;
+	  } else if (type === 'trigonometric') {
+	    xMin = -2 * Math.PI; xMax = 2 * Math.PI; yMin = -3; yMax = 3;
+	  } else if (type === 'exponential') {
+	    xMin = -2; xMax = 5; yMin = -1; yMax = 20;
+	  } else {
+	    xMin = -10; xMax = 10; yMin = -10; yMax = 10;
+	  }
+
+	  updateView();
+	}
+
+	/* ---------- Zoom, pan, reset ---------- */
+	function zoomIn() {
+	  const cx = (xMin + xMax) / 2, cy = (yMin + yMax) / 2;
+	  const nx = (xMax - xMin) * 0.8, ny = (yMax - yMin) * 0.8;
+	  xMin = cx - nx/2; xMax = cx + nx/2; yMin = cy - ny/2; yMax = cy + ny/2;
+	  updateView();
+	}
+	function zoomOut() {
+	  const cx = (xMin + xMax) / 2, cy = (yMin + yMax) / 2;
+	  const nx = (xMax - xMin) / 0.8, ny = (yMax - yMin) / 0.8;
+	  xMin = cx - nx/2; xMax = cx + nx/2; yMin = cy - ny/2; yMax = cy + ny/2;
+	  updateView();
+	}
+	function panLeft() { const r = xMax - xMin; xMin -= r*0.1; xMax -= r*0.1; updateView(); }
+	function panRight(){ const r = xMax - xMin; xMin += r*0.1; xMax += r*0.1; updateView(); }
+	function panUp()   { const r = yMax - yMin; yMin += r*0.1; yMax += r*0.1; updateView(); }
+	function panDown() { const r = yMax - yMin; yMin -= r*0.1; yMax -= r*0.1; updateView(); }
+	function resetView(){ xMin=-10;xMax=10;yMin=-10;yMax=10; updateView(); }
+
+	function updateView() {
+	  document.getElementById('xMin').value = Math.round(xMin*100)/100;
+	  document.getElementById('xMax').value = Math.round(xMax*100)/100;
+	  document.getElementById('yMin').value = Math.round(yMin*100)/100;
+	  document.getElementById('yMax').value = Math.round(yMax*100)/100;
+	  const originalRange = 20;
+	  const currentRange = xMax - xMin;
+	  zoomLevel = originalRange / currentRange;
+	  document.getElementById('zoomLevelInfo').textContent = `Zoom: ${Math.round(zoomLevel*100)}%`;
+	  plotFunction();
+	}
+
+	/* ---------- Inicialización y listeners ---------- */
+	function init() {
+	  initCanvas();
+	  updateControls();
+	  window.addEventListener('resize', initCanvas);
+
+	  document.getElementById('functionType').addEventListener('change', () => { updateControls(); });
+	  document.getElementById('plotBtn').addEventListener('click', plotFunction);
+	  document.getElementById('resetBtn').addEventListener('click', function(){ resetView(); updateControls(); });
+	  document.getElementById('resetViewBtn').addEventListener('click', resetView);
+	  document.getElementById('autoViewBtn').addEventListener('click', autoAdjustView);
+
+	  document.getElementById('zoomInBtn').addEventListener('click', zoomIn);
+	  document.getElementById('zoomOutBtn').addEventListener('click', zoomOut);
+	  document.getElementById('panLeftBtn').addEventListener('click', panLeft);
+	  document.getElementById('panRightBtn').addEventListener('click', panRight);
+	  document.getElementById('panUpBtn').addEventListener('click', panUp);
+	  document.getElementById('panDownBtn').addEventListener('click', panDown);
+
+	  document.getElementById('xMin').addEventListener('change', function(){ xMin = parseFloat(this.value); plotFunction(); });
+	  document.getElementById('xMax').addEventListener('change', function(){ xMax = parseFloat(this.value); plotFunction(); });
+	  document.getElementById('yMin').addEventListener('change', function(){ yMin = parseFloat(this.value); plotFunction(); });
+	  document.getElementById('yMax').addEventListener('change', function(){ yMax = parseFloat(this.value); plotFunction(); });
+
+	  drawGrid();
+	}
+
+	document.addEventListener('DOMContentLoaded', init);
+	</script>
+
+    
 </body>
 </html>

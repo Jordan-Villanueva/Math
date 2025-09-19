@@ -325,7 +325,6 @@
             <option value="quadratic1d">Cuadrática 1D (ax² + bx + c ▢ 0)</option>
             <option value="absolute">Valor absoluto (|ax + b| ▢ c)</option>
             <option value="rational">Racional ((ax + b)/(cx + d) ▢ 0)</option>
-            <option value="trigonometric">Trigonométrica (seno/coseno)</option>
           </select>
         </div>
         
@@ -506,7 +505,7 @@
         }
       }
       
-      // Marcas en el eje Y
+      // Marcas en the eje Y
       for (let y = Math.ceil(yMin); y <= yMax; y++) {
         if (y === 0) continue;
         const pixelY = yOffset - y * yScale;
@@ -587,12 +586,6 @@
           c = parseFloat(document.getElementById('ratDenomA').value) || 1;
           d = parseFloat(document.getElementById('ratDenomB').value) || 0;
           plotRationalInequality(a, b, c, d, sign, xScale, yScale, xOffset, yOffset);
-          break;
-         case 'trigonometric':
-          const funcType = document.getElementById('trigFunction').value;
-          const amplitude = parseFloat(document.getElementById('trigAmplitude').value) || 1;
-          const constant = parseFloat(document.getElementById('trigConstant').value) || 0;
-          plotTrigonometricInequality(funcType, amplitude, constant, sign, xScale, yScale, xOffset, yOffset);
           break;
       }
     }
@@ -698,6 +691,14 @@
       // Dibujar la parábola
       ctx.strokeStyle = '#2b7a78';
       ctx.lineWidth = 3;
+      
+      // Determinar si la curva es punteada o sólida
+      if (sign === '<' || sign === '>') {
+        ctx.setLineDash([10, 5]); // punteada
+      } else {
+        ctx.setLineDash([]); // sólida
+      }
+      
       ctx.beginPath();
       
       let firstPoint = true;
@@ -719,20 +720,11 @@
       }
       ctx.stroke();
       
+      // Restaurar línea sólida
+      ctx.setLineDash([]);
+      
       // Dibujar área de solución usando prueba de punto
       ctx.fillStyle = 'rgba(43, 122, 120, 0.3)';
-      
-      // Probar un punto para determinar qué lado sombrear (usamos (0,0) si no está en la parábola)
-      let testX = 0, testY = 0;
-      const testParabola = a*testX*testX + b*testX + c;
-      
-      let shouldShade = false;
-      switch(sign) {
-        case '<': shouldShade = testY < testParabola; break;
-        case '>': shouldShade = testY > testParabola; break;
-        case '<=': shouldShade = testY <= testParabola; break;
-        case '>=': shouldShade = testY >= testParabola; break;
-      }
       
       // Crear un gradiente para mejor visualización
       const gradient = ctx.createLinearGradient(0, 0, 0, height);
@@ -753,27 +745,15 @@
         }
       }
       
-      // Completar el área en la dirección correcta
-      if (shouldShade) {
-        if (sign === '<' || sign === '<=') {
-          // Sombrear por debajo de la parábola
-          ctx.lineTo(width, height);
-          ctx.lineTo(0, height);
-        } else {
-          // Sombrear por encima de la parábola
-          ctx.lineTo(0, 0);
-          ctx.lineTo(0, height);
-        }
+      // Completar el área en la dirección correcta según el signo
+      if (sign === '<' || sign === '<=') {
+        // Sombrear por debajo de la parábola
+        ctx.lineTo(width, height);
+        ctx.lineTo(0, height);
       } else {
-        if (sign === '<' || sign === '<=') {
-          // Sombrear por encima de la parábola
-          ctx.lineTo(0, 0);
-          ctx.lineTo(0, height);
-        } else {
-          // Sombrear por debajo de la parábola
-          ctx.lineTo(width, height);
-          ctx.lineTo(0, height);
-        }
+        // Sombrear por encima de la parábola
+        ctx.lineTo(width, 0);
+        ctx.lineTo(0, 0);
       }
       
       ctx.closePath();
@@ -884,6 +864,14 @@
       // Dibujar la parábola
       ctx.strokeStyle = '#2b7a78';
       ctx.lineWidth = 3;
+      
+      // Determinar si la curva es punteada o sólida
+      if (sign === '<' || sign === '>') {
+        ctx.setLineDash([10, 5]); // punteada
+      } else {
+        ctx.setLineDash([]); // sólida
+      }
+      
       ctx.beginPath();
       
       let firstPoint = true;
@@ -904,6 +892,9 @@
         }
       }
       ctx.stroke();
+      
+      // Restaurar línea sólida
+      ctx.setLineDash([]);
       
       // Encontrar las raíces para determinar los intervalos
       const discriminant = b*b - 4*a*c;
@@ -1012,6 +1003,14 @@
       // Dibujar la función
       ctx.strokeStyle = '#2b7a78';
       ctx.lineWidth = 3;
+      
+      // Determinar si la función es punteada o sólida
+      if (sign === '<' || sign === '>') {
+        ctx.setLineDash([10, 5]); // punteada
+      } else {
+        ctx.setLineDash([]); // sólida
+      }
+      
       ctx.beginPath();
       
       let firstPoint = true;
@@ -1032,6 +1031,9 @@
         }
       }
       ctx.stroke();
+      
+      // Restaurar línea sólida
+      ctx.setLineDash([]);
       
       // Resolver la desigualdad
       let solutionText = `Desigualdad: |${a}x ${b >= 0 ? '+' : ''}${b}| ${sign} ${c}\n`;
@@ -1104,6 +1106,14 @@
       // Dibujar la función
       ctx.strokeStyle = '#2b7a78';
       ctx.lineWidth = 3;
+      
+      // Determinar si la función es punteada o sólida
+      if (sign === '<' || sign === '>') {
+        ctx.setLineDash([10, 5]); // punteada
+      } else {
+        ctx.setLineDash([]); // sólida
+      }
+      
       ctx.beginPath();
       
       let firstPoint = true;
@@ -1146,6 +1156,9 @@
       }
       ctx.stroke();
       
+      // Restaurar línea sólida
+      ctx.setLineDash([]);
+      
       // Encontrar los puntos críticos
       const zeroPoint = -b / a;
       const asymptote = -d / c;
@@ -1181,7 +1194,7 @@
       }
       
       // Mostrar solución
-      let solutionText = `Desigualdad: (${a}x ${b >= 0 ? '+' : ''}${b})/(${c}x ${d >= 0 ? '+' : ''}${d}) ${sign} 0\n`;
+      let solutionText = `Desigualdad: (${a}x ${b >= 0 ? '+' : ''}${b})/(${c*x} ${d >= 0 ? '+' : ''}${d}) ${sign} 0\n`;
       
       if (zeroPoint < asymptote) {
         if (sign === '>' || sign === '>=') {
@@ -1198,127 +1211,6 @@
       }
       
       document.getElementById('solutionOutput').textContent = solutionText;
-    }
-    
-    function plotTrigonometricInequality(funcType, amplitude, constant, sign, xScale, yScale, xOffset, yOffset) {
-      const width = canvas.width;
-      const height = canvas.height;
-      
-      // Dibujar la función trigonométrica
-      ctx.strokeStyle = '#2b7a78';
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      
-      let firstPoint = true;
-      for (let pixelX = 0; pixelX <= width; pixelX++) {
-        const x = (pixelX - xOffset) / xScale;
-        let y;
-        
-        switch(funcType) {
-          case 'sin':
-            y = amplitude * Math.sin(x) + constant;
-            break;
-          case 'cos':
-            y = amplitude * Math.cos(x) + constant;
-            break;
-          case 'sin2':
-            y = amplitude * Math.sin(2 * x) + constant;
-            break;
-          case 'cos2':
-            y = amplitude * Math.cos(2 * x) + constant;
-            break;
-          case 'sin05':
-            y = amplitude * Math.sin(0.5 * x) + constant;
-            break;
-          case 'cos05':
-            y = amplitude * Math.cos(0.5 * x) + constant;
-            break;
-          default:
-            y = amplitude * Math.sin(x) + constant;
-        }
-        
-        const pixelY = yOffset - y * yScale;
-        
-        if (pixelY >= 0 && pixelY <= height) {
-          if (firstPoint) {
-            ctx.moveTo(pixelX, pixelY);
-            firstPoint = false;
-          } else {
-            ctx.lineTo(pixelX, pixelY);
-          }
-        } else {
-          firstPoint = true;
-        }
-      }
-      ctx.stroke();
-      
-      // Dibujar área de solución
-      const imageData = ctx.getImageData(0, 0, width, height);
-      const data = imageData.data;
-      
-      // Evaluar cada píxel para el sombreado
-      for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-          const worldX = xMin + x / xScale;
-          const worldY = yMin + (height - y) / yScale;
-          
-          let trigValue;
-          switch(funcType) {
-            case 'sin':
-              trigValue = amplitude * Math.sin(worldX) + constant;
-              break;
-            case 'cos':
-              trigValue = amplitude * Math.cos(worldX) + constant;
-              break;
-            case 'sin2':
-              trigValue = amplitude * Math.sin(2 * worldX) + constant;
-              break;
-            case 'cos2':
-              trigValue = amplitude * Math.cos(2 * worldX) + constant;
-              break;
-            case 'sin05':
-              trigValue = amplitude * Math.sin(0.5 * worldX) + constant;
-              break;
-            case 'cos05':
-              trigValue = amplitude * Math.cos(0.5 * worldX) + constant;
-              break;
-            default:
-              trigValue = amplitude * Math.sin(worldX) + constant;
-          }
-          
-          let satisfies = false;
-          switch(sign) {
-            case '<': satisfies = worldY < trigValue; break;
-            case '<=': satisfies = worldY <= trigValue; break;
-            case '>': satisfies = worldY > trigValue; break;
-            case '>=': satisfies = worldY >= trigValue; break;
-          }
-          
-          if (satisfies) {
-            const index = (y * width + x) * 4;
-            data[index] = Math.floor(data[index] * 0.7 + 43 * 0.3);
-            data[index + 1] = Math.floor(data[index + 1] * 0.7 + 122 * 0.3);
-            data[index + 2] = Math.floor(data[index + 2] * 0.7 + 120 * 0.3);
-          }
-        }
-      }
-      
-      ctx.putImageData(imageData, 0, 0);
-      
-      // Mostrar solución
-      let functionText;
-      switch(funcType) {
-        case 'sin': functionText = `sin(x)`; break;
-        case 'cos': functionText = `cos(x)`; break;
-        case 'sin2': functionText = `sin(2x)`; break;
-        case 'cos2': functionText = `cos(2x)`; break;
-        case 'sin05': functionText = `sin(0.5x)`; break;
-        case 'cos05': functionText = `cos(0.5x)`; break;
-      }
-      
-      document.getElementById('solutionOutput').textContent =
-        `Desigualdad: y ${sign} ${amplitude}${functionText} ${constant >= 0 ? '+' : ''}${constant}\n` +
-        `La región sombreada representa todas las soluciones (x,y) que satisfacen la desigualdad.`;
     }
 
     // Actualizar controles según el tipo de desigualdad
@@ -1426,29 +1318,6 @@
             <div class="control-group">
               <label for="ratDenomB">Denominador d:</label>
               <input type="number" id="ratDenomB" value="0" step="0.1">
-            </div>
-          `;
-          break;
-        case 'trigonometric':
-          controlsHTML = `
-            <div class="control-group">
-              <label for="trigFunction">Función:</label>
-              <select id="trigFunction">
-                <option value="sin">sin(x)</option>
-                <option value="cos">cos(x)</option>
-                <option value="sin2">sin(2x)</option>
-                <option value="cos2">cos(2x)</option>
-                <option value="sin05">sin(0.5x)</option>
-                <option value="cos05">cos(0.5x)</option>
-              </select>
-            </div>
-            <div class="control-group">
-              <label for="trigAmplitude">Amplitud:</label>
-              <input type="number" id="trigAmplitude" value="1" step="0.1">
-            </div>
-            <div class="control-group">
-              <label for="trigConstant">Constante:</label>
-              <input type="number" id="trigConstant" value="0" step="0.1">
             </div>
           `;
           break;
